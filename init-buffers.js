@@ -1,12 +1,41 @@
+function initColorBuffer(gl) {
+    const colors = [
+      1.0,
+      1.0,
+      1.0,
+      1.0, // white - RGBA colors for top-right vertex (corresponds with same vertex order as the geometry)
+      1.0,
+      0.0,
+      0.0,
+      1.0, // red
+      0.0,
+      1.0,
+      0.0,
+      1.0, // green
+      0.0,
+      0.0,
+      1.0,
+      1.0, // blue
+    ];
+  
+    const colorBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+  
+    return colorBuffer;
+  }  
+
 function initBuffers(gl) {
     const positionBuffer = initPositionBuffer(gl);
+    const colorBuffer = initColorBuffer(gl);
   
     return {
       position: positionBuffer,
+      color: colorBuffer,
     };
   }
   
-  function initPositionBuffer(gl) {
+function initPositionBuffer(gl) {
     // Create a buffer for the square's positions.
     const positionBuffer = gl.createBuffer();
   
