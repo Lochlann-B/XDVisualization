@@ -1,4 +1,4 @@
-function drawScene(gl, programInfo, buffers, cubeRotation) {
+function drawScene(gl, programInfo, buffers, texture, cubeRotation) {
     gl.clearColor(0.0, 0.0, 0.0, 1.0); // Clear to black, fully opaque
     gl.clearDepth(1.0); // Clear everything
     gl.enable(gl.DEPTH_TEST); // Enable depth testing
@@ -56,12 +56,14 @@ function drawScene(gl, programInfo, buffers, cubeRotation) {
       [1, 0, 0],
     ); // axis to rotate around (X)
     
-    
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+      
   
     // Tell WebGL how to pull out the positions from the position
     // buffer into the vertexPosition attribute.
     setPositionAttribute(gl, buffers, programInfo);
-    setColorAttribute(gl, buffers, programInfo);
+    setTextureAttribute(gl, buffers, programInfo);
 
     // Tell WebGL which indices to use to index the vertices
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.indices);
@@ -81,6 +83,16 @@ function drawScene(gl, programInfo, buffers, cubeRotation) {
       false,
       modelViewMatrix,
     );
+
+    // Tell WebGL we want to affect texture unit 0
+    gl.activeTexture(gl.TEXTURE0);
+
+    // Bind the texture to texture unit 0
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+
+    // Tell the shader we bound the texture to texture unit 0
+    gl.uniform1i(programInfo.uniformLocations.uSampler, 0);
+
   
     {
       const vertexCount = 36;
@@ -88,6 +100,25 @@ function drawScene(gl, programInfo, buffers, cubeRotation) {
       const offset = 0;
       gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
     }    
+  }
+
+  function setTextureAttribute(gl, buffers, programInfo) {
+    const numComponents = 2;
+    const type = gl.FLOAT;
+    const normalize = false;
+    const stride = 0;
+    const offset = 0;
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffers.texture);
+    gl.vertexAttribPointer(
+      programInfo.attribLocations.textureCoord,
+      numComponents,
+      type,
+      normalize,
+      stride,
+      offset
+    );
+    gl.enableVertexAttribArray(programInfo.attribLocations.textureCoord);
   }
 
   function setColorAttribute(gl, buffers, programInfo) {
