@@ -1,8 +1,37 @@
 import { initBuffers } from "./init-buffers.js";
 import { drawScene } from "./draw-scene.js";
+import { tessellate } from "./tessellator.js";
 
 let cubeRotation = 0.0;
 let deltaTime = 0;
+
+let cx = 0;
+let cy = 0;
+let cz = 5;
+
+document.addEventListener('keydown', (event) => {
+  switch(event.key) {
+    case "w":
+      cz -= 0.1;
+      break;
+    case "a":
+      cx -= 0.1;
+      break;
+    case "s":
+      cz += 0.1;
+      break;
+    case "d":
+      cx += 0.1;
+      break;
+    case "r":
+      cy += 0.1;
+      break;
+    case "f":
+      cy -= 0.1;
+      break;
+  }
+});
+
 
 main();
 
@@ -209,10 +238,13 @@ void main(void) {
     // Flip image pixels into the bottom-to-top order that WebGL expects.
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 
-
+    let xSamples = {range: [-10,10], sampleCount: 50};
+    let ySamples = {range: [-10,10], sampleCount: 50};
+    let arrays = tessellate(function(x,y) {if (x == 0 && y == 0) {return 0;} return undefined;}, xSamples, ySamples, null);
     // Here's where we call the routine that builds all the
     // objects we'll be drawing.
-    const buffers = initBuffers(gl);
+    const buffers = initBuffers(gl, arrays);
+    const vertexData = arrays.indices.length;
 
     let then = 0;
 
@@ -222,7 +254,7 @@ void main(void) {
       deltaTime = now - then;
       then = now;
 
-      drawScene(gl, programInfo, buffers, texture, cubeRotation);
+      drawScene(gl, programInfo, buffers, texture, cubeRotation, cx, cy, cz, vertexData);
       cubeRotation += deltaTime;
 
       requestAnimationFrame(render);
@@ -230,3 +262,5 @@ void main(void) {
     requestAnimationFrame(render);
 
 }
+
+
