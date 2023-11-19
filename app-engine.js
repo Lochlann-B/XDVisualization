@@ -16,6 +16,7 @@ export class AppEngine {
         const graphCtrller = new GraphController();
         graphCtrller.initGraphControllerTemp();
         this.geometryControllers.graph.push(graphCtrller);
+        this.geometryControllers.point.push(graphCtrller);
     }
 
     appLoop() {

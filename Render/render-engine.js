@@ -1,4 +1,5 @@
 import { GraphShader } from "./Shaders/graph-shaders.js";
+import { PointShader } from "./Shaders/point-shader.js";
 
 export class RenderEngine {
     canvas = undefined; 
@@ -29,8 +30,11 @@ export class RenderEngine {
         // initialise individual shaders
         const graphShader = new GraphShader();
         graphShader.initShader(gl);
+        const pointShader = new PointShader();
+        pointShader.initShader(gl);
 
         this.shaderList.graph = graphShader;
+        this.shaderList.point = pointShader;
     }
 
     renderShaders(camera, geometryControllers) {

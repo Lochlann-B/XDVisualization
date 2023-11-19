@@ -8,9 +8,10 @@ export class GraphController extends GeometryController {
     fn = undefined;
 
     initGraphControllerTemp() {
-        let xSamples = {range: [-3,3], sampleCount: 50};
-        let ySamples = {range: [-3,3], sampleCount: 50};
-        this.arrays = tessellate(function(x,y) {return Math.sin(x);}, xSamples, ySamples, null);
+        let xSamples = {range: [-3,3], sampleCount: 100};
+        let ySamples = {range: [-3,3], sampleCount: 100};
+        let zSamples = {range: [-3,3]};
+        this.arrays = tessellate(function(x,y) {return 3.1*Math.sin(x+y);}, xSamples, ySamples, zSamples);
     }
 
     updateTimeDependentComponents(time, deltaTime) {
