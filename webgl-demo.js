@@ -1,6 +1,6 @@
-import { initBuffers } from "./init-buffers.js";
+/*import { initBuffers } from "./init-buffers.js";
 import { drawScene } from "./draw-scene.js";
-import { tessellate } from "./tessellator.js";
+import { tessellate } from "./GraphVisualiser/tessellator.js";
 
 let cubeRotation = 0.0;
 let deltaTime = 0;
@@ -38,7 +38,7 @@ main();
 //
 // Initialize a texture and load an image.
 // When the image finished loading copy it into the texture.
-//
+// TODO: DONE
 function loadTexture(gl, url) {
   const texture = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -98,7 +98,7 @@ function loadTexture(gl, url) {
 
   return texture;
 }
-
+// TODO: DONE
 function isPowerOf2(value) {
   return (value & (value - 1)) === 0;
 }
@@ -107,6 +107,7 @@ function isPowerOf2(value) {
 //
 // Initialize a shader program, so WebGL knows how to draw our data
 //
+// TODO: DONE
 function initShaderProgram(gl, vsSource, fsSource) {
     const vertexShader = loadShader(gl, gl.VERTEX_SHADER, vsSource);
     const fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fsSource);
@@ -135,7 +136,7 @@ function initShaderProgram(gl, vsSource, fsSource) {
   //
   // creates a shader of the given type, uploads the source and
   // compiles it.
-  //
+  // TODO: DONE
   function loadShader(gl, type, source) {
     const shader = gl.createShader(type);
   
@@ -167,6 +168,7 @@ function initShaderProgram(gl, vsSource, fsSource) {
 //
 function main() {
     // Vertex shader program
+    // TODO: DONE
     const vsSource = `
 attribute vec4 aVertexPosition;
 attribute vec2 aTextureCoord;
@@ -193,18 +195,20 @@ void main(void) {
     `;
 
 
-
+    // TODO: DONE
     const canvas = document.querySelector("#glcanvas");
     // Initialize the GL context
     const gl = canvas.getContext("webgl");
 
     // Initialize a shader program; this is where all the lighting
     // for the vertices and so forth is established.
+    // TODO: DONE
     const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
 
     // Collect all the info needed to use the shader program.
     // Look up which attribute our shader program is using
     // for aVertexPosition and look up uniform locations.
+    // TODO: DONE
     const programInfo = {
         program: shaderProgram,
         attribLocations: {
@@ -221,6 +225,7 @@ void main(void) {
 
 
     // Only continue if WebGL is available and working
+    // TODO: DONE
     if (gl === null) {
     alert(
         "Unable to initialize WebGL. Your browser or machine may not support it.",
@@ -228,16 +233,19 @@ void main(void) {
     return;
     }
 
+    //TODO: DONE
     // Set clear color to black, fully opaque
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     // Clear the color buffer with specified clear color
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     // Load texture
+    // TODO: DONE
     const texture = loadTexture(gl, "troll2.png");
     // Flip image pixels into the bottom-to-top order that WebGL expects.
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 
+    // TODO: DONE
     let xSamples = {range: [-10,10], sampleCount: 50};
     let ySamples = {range: [-10,10], sampleCount: 50};
     let arrays = tessellate(function(x,y) {if (x == 0 && y == 0) {return 0;} return undefined;}, xSamples, ySamples, null);
@@ -264,3 +272,4 @@ void main(void) {
 }
 
 
+*/
