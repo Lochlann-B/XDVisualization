@@ -114,9 +114,8 @@ export class PointShader extends Shader {
     
         {
             const vertexCount = geometryInfo.arrays.singularPositions.length;
-            const type = gl.UNSIGNED_SHORT;
             const offset = 0;
-            gl.drawElements(gl.POINTS, vertexCount, type, offset);
+            gl.drawArrays(gl.POINTS, offset, vertexCount);
             //gl.drawArrays(gl.TRIANGLES,offset,vertexCount);
         }    
     }

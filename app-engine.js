@@ -1,6 +1,7 @@
 import { RenderEngine } from "./Render/render-engine.js";
 import { Camera } from "./camera.js";
 import { GraphController } from "./GraphVisualiser/graph-controller.js";
+import { AxesGeometryController } from "./GeometryControllers/axes-controller.js";
 
 export class AppEngine {
 
@@ -17,6 +18,12 @@ export class AppEngine {
         graphCtrller.initGraphControllerTemp();
         this.geometryControllers.graph.push(graphCtrller);
         this.geometryControllers.point.push(graphCtrller);
+        const axesCtrller = new AxesGeometryController();
+        const range = [-3.0,3.0];
+        axesCtrller.xRange = range;
+        axesCtrller.yRange = range;
+        axesCtrller.zRange = range;
+        this.geometryControllers.line.push(axesCtrller);
     }
 
     appLoop() {

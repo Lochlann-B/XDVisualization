@@ -26,4 +26,6 @@ export class GraphController extends GeometryController {
     
         return {arrays: this.arrays, modelMatrix: this.modelMatrix};
     }
+
+    get arrays() { return this.arrays; }
 }
