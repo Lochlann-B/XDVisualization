@@ -77,7 +77,7 @@ export class TextGeometryController extends GeometryController {
 
         for (let i = 0; i < s.length; i++) {
             let char = s[i];
-            let fontCharInfo = fontAtlas.ArialTextureAtlas(char);
+            let fontCharInfo = fontAtlas.TextureAtlas(char);
 
             // Set up 4 vertices
             for (let xx = 0; xx < 2; xx++) {

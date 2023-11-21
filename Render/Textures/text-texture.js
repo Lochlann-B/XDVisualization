@@ -1,6 +1,6 @@
 import { loadTexture } from "./texture-controller.js";
 
-const fontMap = {"Arial": "../../Resources/fontr.png"};
+const fontMap = {"Arial": "../../Resources/font.png", "pixel": "../../Resources/font (1).png"};
 
 function getTexture(gl, font) {
     //TODO: Make defensive

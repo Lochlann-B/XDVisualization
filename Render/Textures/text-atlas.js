@@ -106,11 +106,100 @@ const atlas = {
     }
   }
 
+const pixelFontAtlas = {
+  "name": "pixel",
+  "size": "11",
+  "bold": false,
+  "italic": false,
+  "width": 64,
+  "height": 40,
+  "characters": {
+    "a": { x:  0, y:  0, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "b": { x:  8, y:  0, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "c": { x: 16, y:  0, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "d": { x: 24, y:  0, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "e": { x: 32, y:  0, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "f": { x: 40, y:  0, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "g": { x: 48, y:  0, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "h": { x: 56, y:  0, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "i": { x:  0, y:  8, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "j": { x:  8, y:  8, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "k": { x: 16, y:  8, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "l": { x: 24, y:  8, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "m": { x: 32, y:  8, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "n": { x: 40, y:  8, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "o": { x: 48, y:  8, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "p": { x: 56, y:  8, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "q": { x:  0, y: 16, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "r": { x:  8, y: 16, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "s": { x: 16, y: 16, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "t": { x: 24, y: 16, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "u": { x: 32, y: 16, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "v": { x: 40, y: 16, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "w": { x: 48, y: 16, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "x": { x: 56, y: 16, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "y": { x:  0, y: 24, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "z": { x:  8, y: 24, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "A": { x:  0, y:  0, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "B": { x:  8, y:  0, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "C": { x: 16, y:  0, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "D": { x: 24, y:  0, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "E": { x: 32, y:  0, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "F": { x: 40, y:  0, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "G": { x: 48, y:  0, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "H": { x: 56, y:  0, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "I": { x:  0, y:  8, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "J": { x:  8, y:  8, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "K": { x: 16, y:  8, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "L": { x: 24, y:  8, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "M": { x: 32, y:  8, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "N": { x: 40, y:  8, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "O": { x: 48, y:  8, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "P": { x: 56, y:  8, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "Q": { x:  0, y: 16, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "R": { x:  8, y: 16, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "S": { x: 16, y: 16, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "T": { x: 24, y: 16, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "U": { x: 32, y: 16, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "V": { x: 40, y: 16, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "W": { x: 48, y: 16, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "X": { x: 56, y: 16, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "Y": { x:  0, y: 24, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "Z": { x:  8, y: 24, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "0": { x: 16, y: 24, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "1": { x: 24, y: 24, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "2": { x: 32, y: 24, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "3": { x: 40, y: 24, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "4": { x: 48, y: 24, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "5": { x: 56, y: 24, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "6": { x:  0, y: 32, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "7": { x:  8, y: 32, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "8": { x: 16, y: 32, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "9": { x: 24, y: 32, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "-": { x: 32, y: 32, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "*": { x: 40, y: 32, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "!": { x: 48, y: 32, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    "?": { x: 56, y: 32, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    ".": { x: 32, y: 32, width: 8, height: 8,"originX":0,"originY":0,"advance":8},
+    " ": { x: 0, y: 0, width: 1, height: 1, "advance": 8},
+  },
+};
+
+export class PixelFontAtlas {
+  width = pixelFontAtlas.width;
+  height = pixelFontAtlas.height;
+
+  TextureAtlas(c) {
+      const info = pixelFontAtlas.characters[c];
+      return {x: info.x, y: info.y, width: info.width, height: info.height, spacing: info.advance, originX: info.originX, originY:info.originY };
+  }
+}
+
 export class ArialFontAtlas {
     width = atlas.width;
     height = atlas.height;
 
-    ArialTextureAtlas(c) {
+    TextureAtlas(c) {
         const info = atlas.characters[c];
         return {x: info.x, y: info.y, width: info.width, height: info.height, spacing: info.advance, originX: info.originX, originY:info.originY };
     }
