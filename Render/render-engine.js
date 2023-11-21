@@ -1,6 +1,7 @@
 import { GraphShader } from "./Shaders/graph-shaders.js";
 import { PointShader } from "./Shaders/point-shader.js";
 import { LineShader } from "./Shaders/line-shader.js";
+import { BillBoardShader } from "./Shaders/billboard-shaders.js";
 
 export class RenderEngine {
     canvas = undefined; 
@@ -29,16 +30,19 @@ export class RenderEngine {
         gl.clear(gl.COLOR_BUFFER_BIT);
 
         // initialise individual shaders
-        const graphShader = new GraphShader();
-        graphShader.initShader(gl);
-        const pointShader = new PointShader();
-        pointShader.initShader(gl);
+        //const graphShader = new GraphShader();
+        //graphShader.initShader(gl);
+       // const pointShader = new PointShader();
+       // pointShader.initShader(gl);
         const lineShader = new LineShader();
         lineShader.initShader(gl);
+        const billBoardShader = new BillBoardShader();
+        billBoardShader.initShader(gl);
 
-        this.shaderList.graph = graphShader;
-        this.shaderList.point = pointShader;
+        //this.shaderList.graph = graphShader;
+        //this.shaderList.point = pointShader;
         this.shaderList.line = lineShader;
+        this.shaderList.billboard = billBoardShader;
     }
 
     renderShaders(camera, geometryControllers) {
@@ -65,22 +69,27 @@ export class RenderEngine {
         mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
 
         const viewMatrix = mat4.create();
+
+        // Create rotation matrices for each axis
+        let rotationMatrixX = mat4.create();
+        let rotationMatrixY = mat4.create();
+        let rotationMatrixZ = mat4.create();
+
+        // Apply rotations to the individual matrices
+        mat4.fromXRotation(rotationMatrixX, camera.angle.X);
+        mat4.fromYRotation(rotationMatrixY, camera.angle.Y);
+        mat4.fromZRotation(rotationMatrixZ, camera.angle.Z);
+
+        let combinedRotation = mat4.create();
+        mat4.multiply(combinedRotation, rotationMatrixZ, rotationMatrixY);
+        mat4.multiply(combinedRotation, combinedRotation, rotationMatrixX);
+
+        mat4.multiply(viewMatrix, viewMatrix, combinedRotation);
+
         mat4.translate(
             viewMatrix,
             viewMatrix,
             camera.pos.map(coord => -coord));
-        mat4.rotateX(
-            viewMatrix,
-            viewMatrix,
-            -camera.angle.X);
-        mat4.rotateY(
-            viewMatrix,
-            viewMatrix,
-            -camera.angle.Y);
-        mat4.rotateZ(
-            viewMatrix,
-            viewMatrix,
-            -camera.angle.Z);
 
         for (const [type, shader] of Object.entries(this.shaderList)) {
             for (const geometryInfo of geometryControllers[type]) {

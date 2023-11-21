@@ -24,6 +24,12 @@ export class Camera {
               case "f":
                 this.pos[1] -= 0.1;
                 break;
+              case "j":
+                this.angle.Y += 0.1;
+                break;
+              case "l":
+                this.angle.Y -= 0.1;
+                break;
             }
           });
     }

@@ -9,11 +9,6 @@ export class AxesGeometryController extends GeometryController {
     zRange = undefined;
 
     get arrays() {
-        // TODO: could move some of the setup to an init fn to save marginal time, and then
-        //       simply parameterise the ranges to move em when arrays is fetched.
-        // TODO: Make not shit
-        // better way: make one cross shape for each axis, and duplicate
-        
         const ranges = [this.xRange, this.yRange, this.zRange];
         let lines = [];
         // Set up X, Y, Z axes
@@ -65,6 +60,27 @@ export class AxesGeometryController extends GeometryController {
             if (j == 1) { notE(0,i); }
         }
         return cross;
+    }
+
+    getDivisionPositions() {
+        let positions = [];
+        const ranges = [this.xRange, this.yRange, this.zRange];
+
+        // Set up tenth divisions along each axis
+        const rRanges = ranges.map(range => range[1]-range[0]);
+
+        for (let j = 0; j < 3; j++) {
+            let axis = [0,0,0];
+            axis[j] = 1;
+            for (let i = 0; i < 10; i++) {
+                let lower = ranges[j][0]+i*rRanges[j]/10;
+                let upper = ranges[j][1]-i*rRanges[j]/10;
+                positions = positions.concat([
+                    axis[0]*lower, axis[1]*lower, axis[2]*lower,
+                    axis[0]*upper, axis[1]*upper, axis[2]*upper]);
+            }
+        }
+        return positions;
     }
     
 }
