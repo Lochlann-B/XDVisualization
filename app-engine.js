@@ -6,6 +6,8 @@ import { TextGeometryController } from "./GeometryControllers/text-billboard-con
 import { ArialFontAtlas, PixelFontAtlas } from "./Render/Textures/text-atlas.js";
 import { AxesDivLabelsController } from "./GeometryControllers/axes-division-labels-controller.js";
 import { TextBillBoardCollectionController } from "./GeometryControllers/text-billboard-collection.js";
+import { sliceFunction, turnUserInputIntoFn } from "./GraphVisualiser/slicing.js";
+import { SlicingController } from "./GraphVisualiser/slicingController.js";
 
 export class AppEngine {
 
@@ -18,27 +20,43 @@ export class AppEngine {
         this.renderEngine.init_engine();
         this.camera.initControls();
 
+        
+
         // temp - move this
         //const graphCtrller = new GraphController();
         //graphCtrller.initGraphControllerTemp();
         //this.geometryControllers.graph.push(graphCtrller);
         //this.geometryControllers.point.push(graphCtrller);
+
+        /*
+        let fnInput = "(x,y,z,w) => {return (x)*y+z**2+w**2;}";
+        let unslicedFn = turnUserInputIntoFn(fnInput);
+
+        let slicedArgs = [1];
+        let sliceVals = [1.0];
+        let slicedFn = sliceFunction(unslicedFn, slicedArgs, sliceVals);
+        // Todo: when doing ui for this, make sure they can't slice an arg out of range
+        var slicingController = new SlicingController();
+        */
+        
+
         const axesCtrller = new AxesGeometryController();
-        const xRange = [-.6,.6];
+        const xRange = [-3,3];
         const yRange = [-2,1];
-        const zRange = [-40,30.1];
+        const zRange = [-0.5,4];
         axesCtrller.xRange = xRange;
         axesCtrller.yRange = yRange;
         axesCtrller.zRange = zRange;
         this.geometryControllers.line.push(axesCtrller);
 
-        
         const graphCtrller = new GraphController();
-        graphCtrller.initGraphControllerTemp([xRange, yRange, zRange]);
+        //graphCtrller.initGraphControllerTemp(slicedFn, [xRange, yRange, zRange]);
+        graphCtrller.initGraphControllerTemp((x,y) => x**2 + y**2, [xRange, yRange, zRange]);
         graphCtrller.modelMatrix = axesCtrller.modelMatrix;
         this.geometryControllers.graph.push(graphCtrller);
         this.geometryControllers.point.push(graphCtrller);
 
+        //slicingController.initControls(slicedFn, 2, 'c', 'v', graphCtrller);
 
         const txtCtrller = new TextGeometryController();
         txtCtrller.camera = this.camera;

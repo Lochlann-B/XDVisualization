@@ -7,11 +7,15 @@ export class GraphController extends GeometryController {
     modelMatrix = mat4.create();
     fn = undefined;
 
-    initGraphControllerTemp(range, samples=40) {
-        let xSamples = {range: range[0], sampleCount: samples};
-        let ySamples = {range: range[1], sampleCount: samples};
-        let zSamples = {range: range[2]};
-        this.arrays = tessellate(function(x,y) {return 3.1*Math.sin(x+y);}, xSamples, ySamples, zSamples);
+    xSamples = undefined;
+    ySamples = undefined;
+    zSamples = undefined;
+
+    initGraphControllerTemp(fn, range, samples=40) {
+        this.xSamples = {range: range[0], sampleCount: samples};
+        this.ySamples = {range: range[1], sampleCount: samples};
+        this.zSamples = {range: range[2]};
+        this.arrays = tessellate(fn, this.xSamples, this.ySamples, this.zSamples);
     }
 
     updateTimeDependentComponents(time, deltaTime) {

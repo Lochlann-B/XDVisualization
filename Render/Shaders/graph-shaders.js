@@ -15,6 +15,7 @@ uniform highp float uZMax;
 
 varying highp vec2 vTextureCoord;
 varying mediump float vZVal;
+varying mediump float vRawZ;
 
 void main(void) {
    // mediump float near = uProjectionMatrix[2][3] / (uProjectionMatrix[1][2] - 1.0);
@@ -23,6 +24,7 @@ void main(void) {
     gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
     vTextureCoord = aTextureCoord;
     vZVal = (aVertexPosition.z - uZMin)/(uZMax - uZMin);
+    vRawZ = aVertexPosition.z;
 }
     `;
 
@@ -30,6 +32,7 @@ const fsSource = `
 precision mediump float;
 varying highp vec2 vTextureCoord;
 varying mediump float vZVal;
+varying mediump float vRawZ;
 
 uniform sampler2D uSampler;
 
@@ -47,6 +50,9 @@ void main(void) {
     vec4 texCol = texture2D(uSampler, vTextureCoord);
     texCol.w = 0.5;
     gl_FragColor = vec4(0.5*texCol.xyz + 0.5*rainbowGradient(vZVal), 1.0);
+    if(mod(vRawZ,0.5) < 0.01) {
+        gl_FragColor = vec4(0.5, 0.5, 0.5, 1.0);
+    }
 }
     `;
 
