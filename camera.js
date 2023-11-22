@@ -1,6 +1,8 @@
 export class Camera {
-    pos = [0.0,0.0,15.0];
+    pos = [0.0,1.0,1.0];
     angle = {X: 0.0, Y: 0.0, Z: 0.0};
+
+    inverseOrientation = quat.create();
 
     move(inc, axis) {
       vec4.scale(axis, axis, inc);
@@ -11,6 +13,37 @@ export class Camera {
       this.pos[2] += axis[2];
     }
 
+    applyViewerControls(refSpace) {
+      /*
+      quat.identity(this.inverseOrientation);
+      quat.rotateX(this.inverseOrientation, this.inverseOrientation, -this.angle.X);
+      quat.rotateY(this.inverseOrientation, this.inverseOrientation, -this.angle.Y);
+      quat.rotateZ(this.inverseOrientation, this.inverseOrientation, -this.angle.Z);
+
+      let newTransform = new XRRigidTransform(
+        { x: -this.pos[0], y: -this.pos[1], z: -this.pos[2] },
+        {
+          x: this.inverseOrientation[0],
+          y: this.inverseOrientation[1],
+          z: this.inverseOrientation[2],
+          w: this.inverseOrientation[3],
+        },
+      );
+      */
+      let newTransform = new XRRigidTransform(
+        { x: -this.pos[0], y: -this.pos[1], z: -this.pos[2]},
+        {
+          x: this.angle.X,
+          y: this.angle.Y,
+          z: this.angle.Z,
+          w: 1.0,
+        },
+      );
+
+      return refSpace.getOffsetReferenceSpace(newTransform);
+
+    }
+
     //temp
     initControls() {
         document.addEventListener('keydown', (event) => {
@@ -18,27 +51,27 @@ export class Camera {
             switch(event.key) {
               case "w":
                 axis[2] = 1;
-                this.move(-0.1, axis);
+                this.move(-1, axis);
                 break;
               case "a":
                 axis[0] = 1;
-                this.move(-0.1, axis);
+                this.move(-1, axis);
                 break;
               case "s":
                 axis[2] = 1;
-                this.move(0.1, axis);
+                this.move(1, axis);
                 break;
               case "d":
                 axis[0] = 1;
-                this.move(0.1, axis);
+                this.move(1, axis);
                 break;
               case "r":
                 axis[1] = 1;
-                this.move(0.1, axis);
+                this.move(1, axis);
                 break;
               case "f":
                 axis[1] = 1;
-                this.move(-0.1, axis);
+                this.move(-1, axis);
                 break;
               case "j":
                 this.angle.Y -= 0.1;

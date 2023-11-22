@@ -2,7 +2,7 @@ import { GeometryController } from "./geometry-controller.js";
 
 
 export class AxesGeometryController extends GeometryController {
-    modelMatrix = mat4.rotateX(mat4.create(), mat4.translate(mat4.create(), mat4.create(), vec3.fromValues(0,0,-5)), -Math.PI/2);
+    modelMatrix = mat4.rotateX(mat4.create(), mat4.translate(mat4.create(), mat4.create(), vec3.fromValues(0,0.05,0.2)), -Math.PI/2);
 
     xrange = [0,1];
     yrange = [0,1];
@@ -88,7 +88,7 @@ export class AxesGeometryController extends GeometryController {
         mat4.getScaling(oldScale, this.modelMatrix)
         vec3.inverse(oldScale, oldScale);
         mat4.scale(this.modelMatrix, this.modelMatrix, oldScale);
-        mat4.scale(this.modelMatrix, this.modelMatrix, vec3.fromValues(15/Math.abs(rRanges[0]), 15/Math.abs(rRanges[1]), 15/Math.abs(rRanges[2])));
+        mat4.scale(this.modelMatrix, this.modelMatrix, vec3.fromValues(0.2/Math.abs(rRanges[0]), 0.2/Math.abs(rRanges[1]), 0.2/Math.abs(rRanges[2])));
     }
 
     /*

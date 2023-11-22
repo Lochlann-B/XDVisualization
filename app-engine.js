@@ -15,11 +15,13 @@ export class AppEngine {
     renderEngine = new RenderEngine();
     camera = new Camera();
     date = new Date();
+    xrReferenceSpace = null;
+
+    
 
     appInit() {
-        this.renderEngine.init_engine();
         this.camera.initControls();
-
+        this.renderEngine.init_engine();
         
 
         // temp - move this
@@ -80,23 +82,51 @@ export class AppEngine {
         //this.geometryControllers.billboard = this.geometryControllers.billboard.concat(axisDivs.axisMap["X"]);
         //this.geometryControllers.billboard = this.geometryControllers.billboard.concat(axisDivs.axisMap["Y"]);
         //this.geometryControllers.billboard = this.geometryControllers.billboard.concat(axisDivs.axisMap["Z"]);
+
+
+        //navigator.xr.requestSession("inline").then(this.renderEngine.init_engine);
     }
 
-    appLoop() {
+    appLoop(session) {
+        
+        let xrSession = session;
+
         let then = 0;
+        let animationFrameRequestID = 0;
 
         const geometryControllers = this.geometryControllers;
         const renderEngine = this.renderEngine;
         const camera = this.camera;
         let current = 0;
 
-        requestAnimationFrame(render);
+        xrSession.updateRenderState({
+            baseLayer: new XRWebGLLayer(xrSession, this.renderEngine.gl),
+          });
+
+          xrSession.requestReferenceSpace("local").then((refSpace) => {
+            this.xrReferenceSpace = refSpace.getOffsetReferenceSpace(
+              new XRRigidTransform(vec3.fromValues(...this.camera.pos), vec3.create()),
+            );
+            animationFrameRequestID = xrSession.requestAnimationFrame(render.bind(this));
+          });
+
+        //requestAnimationFrame(render);
 
         // Draw the scene repeatedly
-        function render(now) {
+        function render(now, frame) {
+            const gl = this.renderEngine.gl;
+            const session = frame.session;
+            let adjustedRefSpace = this.camera.applyViewerControls(this.xrReferenceSpace);
+            animationFrameRequestID = session.requestAnimationFrame(render.bind(this));
+            let pose = frame.getViewerPose(adjustedRefSpace);
             now *= 0.001; // convert to seconds
             //console.log("ANIMATION FRAME REQUESTED. TIME TAKEN: ", Date.now() - current);
             //console.log("NEW RENDER CYCLE AT ", now);
+
+            const glLayer = session.renderState.baseLayer;
+
+            gl.bindFramebuffer(gl.FRAMEBUFFER, glLayer.framebuffer);
+            LogGLError("bindFrameBuffer", gl);
             
             let deltaTime = now - then;
             //console.log("PREVIOUS CYCLE TOOK ", deltaTime);
@@ -109,17 +139,46 @@ export class AppEngine {
             //    geometryCtrllerList.forEach(geometryController => {geometryController.updateTimeDependentComponents(now, deltaTime)});
             // }
             //console.log("  UPDATING TIME COMPONENTS FINISHED. TIME TAKEN: ", Date.now() - curr);
-
+            
+            gl.clearColor(0.0, 0.0, 0.0, 1.0); // Clear to black, fully opaque
+            gl.clearDepth(1.0); // Clear everything
+            gl.enable(gl.DEPTH_TEST); // Enable depth testing
+            gl.depthFunc(gl.LEQUAL); // Near things obscure far things
+            LogGLError("glClear", gl);
+            //gl.enable(gl.CULL_FACE);
+            //gl.disable(gl.BLEND);
+            //gl.depthMask(true);
+        
+            // Clear the canvas before we start drawing on it.
+        
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
             let cur = Date.now();
             //console.log("  NOW RENDERING SHADERS... ");
-            renderEngine.renderShaders(camera, geometryControllers);
+            for (const view of pose.views) {
+                const viewport = glLayer.getViewport(view);
+                gl.viewport(viewport.x, viewport.y, viewport.width, viewport.height);
+                LogGLError(`Setting viewport for eye: ${view.eye}`, gl);
+                gl.canvas.width = viewport.width * pose.views.length;
+                gl.canvas.height = viewport.height;
+                //renderScene(gl, view, programInfo, buffers, texture, deltaTime);
+                
+                renderEngine.renderShaders(view, geometryControllers);
+              }
+           // renderEngine.renderShaders(camera, geometryControllers);
             //console.log("  RENDERING FINISHED. TIME TAKEN: ", Date.now() - cur);
 
             //console.log("REQUESTING NEW ANIMATION FRAME... ", Date.now());
             //console.log("\n");
             current = Date.now();
-            requestAnimationFrame(render);
+            //session.requestAnimationFrame(render);
         }
         
     }
 }
+
+function LogGLError(where, gl) {
+    let err = gl.getError();
+    if (err) {
+      console.error(`WebGL error returned by ${where}: ${err}`);
+    }
+  }
