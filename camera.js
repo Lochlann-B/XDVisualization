@@ -2,39 +2,57 @@ export class Camera {
     pos = [0.0,0.0,15.0];
     angle = {X: 0.0, Y: 0.0, Z: 0.0};
 
+    move(inc, axis) {
+      vec4.scale(axis, axis, inc);
+      let anglesToWorld = mat4.rotateZ(mat4.create(), mat4.rotateY(mat4.create(), mat4.fromXRotation(mat4.create(), -this.angle.X), -this.angle.Y), -this.angle.Z);
+      vec4.transformMat4(axis, axis, anglesToWorld);
+      this.pos[0] += axis[0];
+      this.pos[1] += axis[1]; 
+      this.pos[2] += axis[2];
+    }
+
     //temp
     initControls() {
         document.addEventListener('keydown', (event) => {
+          let axis = vec4.create();
             switch(event.key) {
               case "w":
-                this.pos[2] -= 0.1;
+                axis[2] = 1;
+                this.move(-0.1, axis);
                 break;
               case "a":
-                this.pos[0] -= 0.1;
+                axis[0] = 1;
+                this.move(-0.1, axis);
                 break;
               case "s":
-                this.pos[2] += 0.1;
+                axis[2] = 1;
+                this.move(0.1, axis);
                 break;
               case "d":
-                this.pos[0] += 0.1;
+                axis[0] = 1;
+                this.move(0.1, axis);
                 break;
               case "r":
-                this.pos[1] += 0.1;
+                axis[1] = 1;
+                this.move(0.1, axis);
                 break;
               case "f":
-                this.pos[1] -= 0.1;
+                axis[1] = 1;
+                this.move(-0.1, axis);
                 break;
               case "j":
-                this.angle.Y += 0.1;
-                break;
-              case "l":
                 this.angle.Y -= 0.1;
                 break;
+              case "l":
+                this.angle.Y += 0.1;
+                break;
               case "i":
-                this.angle.X += 0.1;
+                this.angle.X -= 0.1;
+                //this.angle.X = Math.max(-Math.PI/2, this.angle.X);
                 break;
               case "k":
-                this.angle.X -= 0.1;
+                this.angle.X += 0.1;
+                //this.angle.X = Math.min(Math.PI, this.angle.X);
                 break;
             }
           });

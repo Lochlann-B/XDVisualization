@@ -104,7 +104,7 @@ export class AppEngine {
 
             //console.log("  UPDATING TIME COMPONENTS");
             let curr = Date.now();
-            console.log(deltaTime);
+            //console.log(deltaTime);
             //for (const [_, geometryCtrllerList] of Object.entries(geometryControllers)) {
             //    geometryCtrllerList.forEach(geometryController => {geometryController.updateTimeDependentComponents(now, deltaTime)});
             // }

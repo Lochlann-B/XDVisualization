@@ -51,7 +51,7 @@ void main(void) {
     texCol.w = 0.5;
     gl_FragColor = vec4(0.5*texCol.xyz + 0.5*rainbowGradient(vZVal), 1.0);
     if(mod(vRawZ,0.5) < 0.01) {
-        gl_FragColor = vec4(0.5, 0.5, 0.5, 1.0);
+        gl_FragColor = vec4(0.3, 0.3, 0.3, 1.0);
     }
 }
     `;

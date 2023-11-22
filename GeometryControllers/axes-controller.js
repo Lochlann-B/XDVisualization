@@ -2,7 +2,7 @@ import { GeometryController } from "./geometry-controller.js";
 
 
 export class AxesGeometryController extends GeometryController {
-    modelMatrix = mat4.translate(mat4.create(), mat4.create(), vec3.fromValues(0,0,-5));
+    modelMatrix = mat4.rotateX(mat4.create(), mat4.translate(mat4.create(), mat4.create(), vec3.fromValues(0,0,-5)), -Math.PI/2);
 
     xrange = [0,1];
     yrange = [0,1];
