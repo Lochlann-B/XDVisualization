@@ -8,11 +8,11 @@ export class RenderEngine {
     // Initialize the GL context
     gl = undefined;
 
-    shaderList = {graph: undefined, billboard: undefined, line: undefined, point: undefined};
+    shaderList = {graph: undefined, point: undefined, billboard: undefined, line: undefined};
 
     init_engine() {
         this.canvas = document.querySelector("#glcanvas");
-        this.gl = this.canvas.getContext("webgl");
+        this.gl = this.canvas.getContext("webgl2");
 
         const gl = this.gl;
 
@@ -30,17 +30,17 @@ export class RenderEngine {
         gl.clear(gl.COLOR_BUFFER_BIT);
 
         // initialise individual shaders
-        //const graphShader = new GraphShader();
-        //graphShader.initShader(gl);
-       // const pointShader = new PointShader();
-       // pointShader.initShader(gl);
+        const graphShader = new GraphShader();
+        graphShader.initShader(gl);
+        const pointShader = new PointShader();
+        pointShader.initShader(gl);
         const lineShader = new LineShader();
         lineShader.initShader(gl);
         const billBoardShader = new BillBoardShader();
         billBoardShader.initShader(gl);
 
-        //this.shaderList.graph = graphShader;
-        //this.shaderList.point = pointShader;
+        this.shaderList.graph = graphShader;
+        this.shaderList.point = pointShader;
         this.shaderList.line = lineShader;
         this.shaderList.billboard = billBoardShader;
     }
@@ -100,5 +100,10 @@ export class RenderEngine {
                 shader.render(gl, projectionMatrix, viewMatrix, geometryInfo, loadedBuffer);
             }
         }
+        //for (let geoCtrl of geometryControllers.billboard) {
+        //    const loadedBuffer = this.shaderList.billboard.getAndLoadBuffers(gl, geoCtrl);
+        //    this.shaderList.billboard.render(gl, projectionMatrix, viewMatrix, geoCtrl, loadedBuffer);
+        //}
+        gl.flush();
     }
 }

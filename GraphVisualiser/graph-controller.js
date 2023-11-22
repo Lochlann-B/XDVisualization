@@ -7,10 +7,10 @@ export class GraphController extends GeometryController {
     modelMatrix = mat4.create();
     fn = undefined;
 
-    initGraphControllerTemp() {
-        let xSamples = {range: [-3,3], sampleCount: 50};
-        let ySamples = {range: [-3,3], sampleCount: 50};
-        let zSamples = {range: [-3,3]};
+    initGraphControllerTemp(range, samples=40) {
+        let xSamples = {range: range[0], sampleCount: samples};
+        let ySamples = {range: range[1], sampleCount: samples};
+        let zSamples = {range: range[2]};
         this.arrays = tessellate(function(x,y) {return 3.1*Math.sin(x+y);}, xSamples, ySamples, zSamples);
     }
 

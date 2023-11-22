@@ -2,11 +2,11 @@ import { GeometryController } from "./geometry-controller.js";
 
 
 export class AxesGeometryController extends GeometryController {
-    modelMatrix = mat4.create();
+    modelMatrix = mat4.translate(mat4.create(), mat4.create(), vec3.fromValues(0,0,-5));
 
-    xrange = [0,0];
-    yrange = [0,0];
-    zrange = [0,0];
+    xrange = [0,1];
+    yrange = [0,1];
+    zrange = [0,1];
     arrays = {positions: [], colours: []};
 
     set xRange(xRange) {
@@ -25,18 +25,38 @@ export class AxesGeometryController extends GeometryController {
     get yRange() { return this.yrange; }
     get zRange() { return this.zrange; }
 
+    getOffsets(newRange) {
+        let offsetL = 0;
+        let offsetU = 0;
+        if (newRange[0] > 0) {
+            offsetL = -newRange[0];
+        }
+        if (newRange[1] < 0) {
+            offsetU = -newRange[1];
+        }
+        return [offsetL, offsetU];
+    }
+
     update(axis, newRange) {
-        this.xrange = [this.xrange[0]*(1-axis[0]) + newRange[0]*axis[0],this.xrange[1]*(1-axis[0]) + newRange[1]*axis[0]];
+        
+        newRange = [Math.min(newRange[0], newRange[1]), Math.max(newRange[0], newRange[1])];
+
+        this.xrange = [(this.xrange[0])*(1-axis[0]) + newRange[0]*axis[0],(this.xrange[1])*(1-axis[0]) + newRange[1]*axis[0]];
         this.yrange = [this.yrange[0]*(1-axis[1]) + newRange[0]*axis[1],this.yrange[1]*(1-axis[1]) + newRange[1]*axis[1]];
         this.zrange = [this.zrange[0]*(1-axis[2]) + newRange[0]*axis[2],this.zrange[1]*(1-axis[2]) + newRange[1]*axis[2]];
+
+        let xOffsets = this.getOffsets(this.xrange);
+        let yOffsets = this.getOffsets(this.yrange);
+        let zOffsets = this.getOffsets(this.zrange);
+        let offsets = [xOffsets, yOffsets, zOffsets];
 
         const ranges = [this.xrange, this.yrange, this.zrange];
         let lines = [];
         // Set up X, Y, Z axes
         lines = lines.concat([
-            this.xrange[0],0.0,0.0, this.xrange[1],0.0,0.0,
-            0.0,this.yrange[0],0.0, 0.0,this.yrange[1],0.0,
-            0.0,0.0,this.zrange[0], 0.0,0.0,this.zrange[1]]);
+            (this.xrange[0]+xOffsets[0]+xOffsets[1]),0.0,0.0, (this.xrange[1]+xOffsets[0]+xOffsets[1]),0.0,0.0,
+            0.0,(this.yrange[0]+yOffsets[0]+yOffsets[1]),0.0, 0.0,Math.max(0,this.yrange[1]+yOffsets[0]+yOffsets[1]),0.0,
+            0.0,0.0,(this.zrange[0]+zOffsets[0]+zOffsets[1]), 0.0,0.0,(this.zrange[1]+zOffsets[0]+zOffsets[1])]);
 
         // Set up tenth divisions along each axis
         const rRanges = ranges.map(range => range[1]-range[0]);
@@ -48,8 +68,8 @@ export class AxesGeometryController extends GeometryController {
                 let axiss = [0,0,0];
                 axiss[j] = 1;
                 lines = lines.concat(   
-                    this.getCross(axiss, ranges[j][0]+i*rRanges[j]/10, divSz)).concat(
-                    this.getCross(axiss, ranges[j][1]-i*rRanges[j]/10, divSz));
+                    this.getCross(axiss, ranges[j][0]+i*rRanges[j]/10 + offsets[j][0] + offsets[j][1], divSz)).concat(
+                    this.getCross(axiss, ranges[j][1]-i*rRanges[j]/10 + offsets[j][0] + offsets[j][1], divSz));
             }
         }
 
@@ -64,6 +84,11 @@ export class AxesGeometryController extends GeometryController {
 
         this.arrays.positions = lines;
         this.arrays.colours = colours;
+        let oldScale = vec3.create();
+        mat4.getScaling(oldScale, this.modelMatrix)
+        vec3.inverse(oldScale, oldScale);
+        mat4.scale(this.modelMatrix, this.modelMatrix, oldScale);
+        mat4.scale(this.modelMatrix, this.modelMatrix, vec3.fromValues(15/Math.abs(rRanges[0]), 15/Math.abs(rRanges[1]), 15/Math.abs(rRanges[2])));
     }
 
     /*
@@ -105,7 +130,10 @@ export class AxesGeometryController extends GeometryController {
     */ 
 
     updateTimeDependentComponents(time, deltaTime) {
-        mat4.rotateY(this.modelMatrix, this.modelMatrix, deltaTime);
+        let rotY = mat4.create();
+        mat4.fromRotation(rotY, deltaTime, vec3.fromValues(0,1,0));
+        //mat4.rotateY(this.modelMatrix, this.modelMatrix, deltaTime);
+        mat4.mul(this.modelMatrix, this.modelMatrix, rotY);
     }
 
     getCross(axis, pos, divSz) {

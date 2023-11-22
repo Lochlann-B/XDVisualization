@@ -1,0 +1,20 @@
+{
+  "type": "module",
+  "name": "xdvisualization",
+  "version": "1.0.0",
+  "description": "A VR visualization of multi-dimensional functions. Built using WebXR and WebGL.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lochlann-B/XDVisualization.git"
+  },
+  "author": "Lochlann Baker",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Lochlann-B/XDVisualization/issues"
+  },
+  "homepage": "https://github.com/Lochlann-B/XDVisualization#readme"
+}

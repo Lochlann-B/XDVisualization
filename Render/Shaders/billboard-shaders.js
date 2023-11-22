@@ -8,20 +8,28 @@ import { GeometryController } from '../../GeometryControllers/geometry-controlle
 const vsSource = `
 attribute vec3 aVertexPosition;
 attribute vec2 aTextureCoord;
-//attribute vec3 aVertexLocation;
+attribute vec3 aVertexLocation;
 
 uniform mat4 uProjectionMatrix;
-uniform mat4 uModelViewMatrix;
+uniform mat4 uViewMatrix;
 //uniform vec3 uWorldCamera;
 
 varying highp vec2 vTextureCoord;
 
-void main(void) {
-    //mat4 lookAtMatrix = lookAt(aVertexLocation, -uWorldCamera, vec3(0.0,1.0,0.0));
-    //vec4 modelPos = lookAtMatrix * vec4(aVertexPosition, 1.0);
+mat4 translate(mat4 m, vec3 t) {
+    m[3][0] = m[0][0]*t.x + m[1][0]*t.y + m[2][0]*t.z + m[3][0];
+    m[3][1] = m[0][1]*t.x + m[1][1]*t.y + m[2][1]*t.z + m[3][1];
+    m[3][2] = m[0][2]*t.x + m[1][2]*t.y + m[2][2]*t.z + m[3][2];
+    m[3][3] = m[0][3]*t.x + m[1][3]*t.y + m[2][3]*t.z + m[3][3];
+    return m;
+}
 
-    //gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aVertexPosition, 1.0);
-    gl_Position = uProjectionMatrix  * vec4(aVertexPosition, 1.0);
+void main(void) {
+    vec4 viewPos = uViewMatrix * vec4(aVertexLocation, 1.0);
+
+    mat4 mvpMatrix = translate(uProjectionMatrix, viewPos.xyz);
+
+    gl_Position = mvpMatrix  * vec4(aVertexPosition, 1.0);
     vTextureCoord = aTextureCoord;
 }
     `;
@@ -54,32 +62,34 @@ export class BillBoardShader extends Shader {
             program: shaderProgram,
             attribLocations: {
                 vertexPosition: gl.getAttribLocation(shaderProgram, "aVertexPosition"),
-                //vertexLocation: gl.getAttribLocation(shaderProgram, "aVertexLocation"),
+                vertexLocation: gl.getAttribLocation(shaderProgram, "aVertexLocation"),
                 textureCoord: gl.getAttribLocation(shaderProgram, "aTextureCoord"),
             },
             uniformLocations: {
                 projectionMatrix: gl.getUniformLocation(shaderProgram, "uProjectionMatrix"),
-                //viewMatrix: gl.getUniformLocation(shaderProgram, "uModelViewMatrix"),
+                viewMatrix: gl.getUniformLocation(shaderProgram, "uViewMatrix"),
                 uSampler: gl.getUniformLocation(shaderProgram, "uSampler"),
                 //uWorldCamera: gl.getUniformLocation(shaderProgram, "uWorldCamera"),
             },
         };
 
-        this.texture = getTexture(gl, "pixel");
+        this.texture = getTexture(gl, "Arial");
     }
 
     // TODO: CHANGE
     getAndLoadBuffers(gl, textGeometryController) {
         const arrays = textGeometryController.arrays;
-
+        //let worldPos = vec3.create();
+        let worldPoses = textGeometryController.modelMatrices.map(modelMat => {let pModelMat = mat4.create(); mat4.mul(pModelMat, textGeometryController.parentModelMatrix, modelMat); let tVec = vec3.create(); mat4.getTranslation(tVec, modelMat); let tVect4 = vec4.fromValues(tVec[0], tVec[1], tVec[2], 1.0); vec4.transformMat4(tVect4, tVect4, textGeometryController.parentModelMatrix); return tVect4}).reduce((acc, cur) => acc.concat([cur[0], cur[1], cur[2]]), []);
+        //let worldPoses = textGeometryController.modelMatrices.map(modelMat => {let tVec = vec3.create(); mat4.getTranslation(tVec, modelMat); return tVec}).reduce((acc, cur) => acc.concat([cur[0], cur[1], cur[2]]), []);
         const positionBuffer = initPositionBuffer(gl, arrays.positions);
-       // const locationBuffer = initPositionBuffer(gl, textGeometryController.positions);
+        const locationBuffer = initPositionBuffer(gl, worldPoses);
         const textureCoordBuffer = initTextureBuffer(gl, arrays.textureCoords);
         const indexBuffer = initIndexBuffer(gl, arrays.indices);
         
         return {
             position: positionBuffer,
-            //location: locationBuffer,
+            location: locationBuffer,
             texture: textureCoordBuffer,
             indices: indexBuffer,
         };
@@ -110,18 +120,19 @@ export class BillBoardShader extends Shader {
 
         mat4.mul(modelViewMatrix, viewMatrix, modelMatrix);
         */
-       let modelMatrix = geometryInfo.modelMatrix;
-       let worldPos = vec3.create();
-       mat4.getTranslation(worldPos, modelMatrix);//[modelMatrix[12],modelMatrix[13],modelMatrix[14],1.0];
-       let viewPos = vec4.fromValues(worldPos[0], worldPos[1], worldPos[2], 1.0);
-       vec4.transformMat4(viewPos, viewPos, viewMatrix);
+       //let modelMatrix = geometryInfo.modelMatrix;
+    //    let worldPos = vec3.create();
+    //    mat4.getTranslation(worldPos, modelMatrix);//[modelMatrix[12],modelMatrix[13],modelMatrix[14],1.0];
+       //let viewPos = vec4.fromValues(worldPos[0], worldPos[1], worldPos[2], 1.0);
+       //vec4.transformMat4(viewPos, viewPos, viewMatrix);
 
-       let uProjectMat = mat4.create();
-       mat4.translate(uProjectMat, projectionMatrix, vec3.fromValues(viewPos[0], viewPos[1], viewPos[2]));
+       //let uProjectMat = mat4.create();
+       //mat4.translate(uProjectMat, projectionMatrix, vec3.fromValues(viewPos[0], viewPos[1], viewPos[2]));
 
        gl.enable(gl.BLEND);
         gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
         gl.depthMask(false);
+        gl.disable(gl.DEPTH_TEST);
 
     //    gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
     //     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -133,7 +144,7 @@ export class BillBoardShader extends Shader {
         // buffer into the vertexPosition attribute.
         setTextPositionAttribute(gl, loadedBuffers.position, this.programInfo.attribLocations.vertexPosition);
         setTextureAttribute(gl, loadedBuffers.texture, this.programInfo.attribLocations.textureCoord);
-        //setPositionAttribute(gl, loadedBuffers.location, this.programInfo.attribLocations.vertexLocation);
+        setPositionAttribute(gl, loadedBuffers.location, this.programInfo.attribLocations.vertexLocation);
     
         // Tell WebGL which indices to use to index the vertices
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, loadedBuffers.indices);
@@ -146,13 +157,13 @@ export class BillBoardShader extends Shader {
       gl.uniformMatrix4fv(
           this.programInfo.uniformLocations.projectionMatrix,
           false,
-          uProjectMat,
+          projectionMatrix,
       );
-    //  gl.uniformMatrix4fv(
-    //    this.programInfo.uniformLocations.viewMatrix,
-    //    false,
-    //    modelViewMatrix,
-    //);
+      gl.uniformMatrix4fv(
+        this.programInfo.uniformLocations.viewMatrix,
+        false,
+        viewMatrix,
+        );
         
         //gl.uniform3fv(
         //    this.programInfo.uniformLocations.uWorldCamera,

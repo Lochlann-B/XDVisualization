@@ -4,7 +4,7 @@ import { initShaderProgram } from "./shader-program-controller.js";
 import { setColorAttribute, setPositionAttribute } from '../webgl-ctx-controller.js';
 
 const vsSource = `
-attribute vec4 aVertexPosition;
+attribute vec3 aVertexPosition;
 attribute vec4 aColour;
 
 uniform mat4 uModelViewMatrix;
@@ -13,7 +13,7 @@ uniform mat4 uProjectionMatrix;
 varying highp vec4 vColour;
 
 void main(void) {
-    gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
+    gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aVertexPosition,1.0);
     vColour = aColour;
 }
     `;
@@ -74,7 +74,7 @@ export class LineShader extends Shader {
           // buffer into the vertexPosition attribute.
           setPositionAttribute(gl, loadedBuffers.position, this.programInfo.attribLocations.vertexPosition);
           setColorAttribute(gl, loadedBuffers.colour, this.programInfo.attribLocations.colour);
-      
+        
         
           // Tell WebGL to use our program when drawing
           gl.useProgram(this.programInfo.program);

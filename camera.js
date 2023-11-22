@@ -30,6 +30,12 @@ export class Camera {
               case "l":
                 this.angle.Y -= 0.1;
                 break;
+              case "i":
+                this.angle.X += 0.1;
+                break;
+              case "k":
+                this.angle.X -= 0.1;
+                break;
             }
           });
     }

@@ -10,22 +10,43 @@ attribute vec2 aTextureCoord;
 
 uniform mat4 uModelViewMatrix;
 uniform mat4 uProjectionMatrix;
+uniform highp float uZMin;
+uniform highp float uZMax;
 
 varying highp vec2 vTextureCoord;
+varying mediump float vZVal;
 
 void main(void) {
+   // mediump float near = uProjectionMatrix[2][3] / (uProjectionMatrix[1][2] - 1.0);
+    //mediump float far = uProjectionMatrix[2][3] / (uProjectionMatrix[1][2] + 1.0);
+
     gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
     vTextureCoord = aTextureCoord;
+    vZVal = (aVertexPosition.z - uZMin)/(uZMax - uZMin);
 }
     `;
 
 const fsSource = `
+precision mediump float;
 varying highp vec2 vTextureCoord;
+varying mediump float vZVal;
 
 uniform sampler2D uSampler;
 
+vec3 rainbowGradient(float value) {
+    float hue = value * 5.0; // Scale the normalized value to fit the rainbow (0-5)
+
+    float r = clamp(abs(hue - 3.0) - 1.0, 0.0, 1.0);
+    float g = clamp(2.0 - abs(hue - 2.0), 0.0, 1.0);
+    float b = clamp(2.0 - abs(hue - 4.0), 0.0, 1.0);
+
+    return vec3(r, g, b);
+}
+
 void main(void) {
-    gl_FragColor = texture2D(uSampler, vTextureCoord);
+    vec4 texCol = texture2D(uSampler, vTextureCoord);
+    texCol.w = 0.5;
+    gl_FragColor = vec4(0.5*texCol.xyz + 0.5*rainbowGradient(vZVal), 1.0);
 }
     `;
 
@@ -52,7 +73,9 @@ export class GraphShader extends Shader {
             uniformLocations: {
                 projectionMatrix: gl.getUniformLocation(shaderProgram, "uProjectionMatrix"),
                 modelViewMatrix: gl.getUniformLocation(shaderProgram, "uModelViewMatrix"),
-                uSampler: gl.getUniformLocation(shaderProgram, 'uSampler')
+                uSampler: gl.getUniformLocation(shaderProgram, 'uSampler'),
+                zMin: gl.getUniformLocation(shaderProgram, "uZMin"),
+                zMax: gl.getUniformLocation(shaderProgram, "uZMax"),
             },
         };
 
@@ -82,7 +105,7 @@ export class GraphShader extends Shader {
 
           gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
           gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-            
+          gl.depthMask(true);
         
           // Tell WebGL how to pull out the positions from the position
           // buffer into the vertexPosition attribute.
@@ -106,6 +129,14 @@ export class GraphShader extends Shader {
             this.programInfo.uniformLocations.modelViewMatrix,
             false,
             modelViewMatrix,
+        );
+        gl.uniform1f(
+            this.programInfo.uniformLocations.zMin,
+            geometryInfo.arrays.zRanges[0]
+        );
+        gl.uniform1f(
+            this.programInfo.uniformLocations.zMax,
+            geometryInfo.arrays.zRanges[1]
         );
     
         // Tell WebGL we want to affect texture unit 0

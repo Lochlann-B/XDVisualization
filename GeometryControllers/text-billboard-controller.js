@@ -58,7 +58,7 @@ export class TextGeometryController extends GeometryController {
 
     gen2DGeomAndTexturesFromString(fontAtlas, s) {
         // TODO: move
-        let scale = 0.005;
+        let scale = 0.01;
 
         let vertexCount = s.length*4;
         //let vertexCount = s.length*6;
@@ -151,25 +151,10 @@ export class TextGeometryController extends GeometryController {
         mat4.translate(
             modelMatrix,
             modelMatrix,
-            pos);
+            vec4.transformMat4(vec4.create(), vec4.fromValues(pos[0], pos[1], pos[2], 1.0), this.modelMatrix));
 
         this.modelMatrix = modelMatrix;
         this.arrays = arrays;
     }
 
-    updateTimeDependentComponents(time, deltaTime) {
-        let t = vec3.create();
-        let oldT = vec3.fromValues(t[0], t[1], t[2]);
-        mat4.getTranslation(t, this.modelMatrix);
-        vec3.rotateY(t, t, vec3.create(), deltaTime);
-        let modelMatrix = mat4.create();
-
-        mat4.translate(
-            modelMatrix,
-            modelMatrix,
-            t);
-        this.modelMatrix = modelMatrix;
-        //mat4.translate(this.modelMatrix, this.modelMatrix, t);//vec3.sub(t, t, oldT));
-        //mat4.rotateY(this.modelMatrix, this.modelMatrix, deltaTime);
-    }
 }

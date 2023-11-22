@@ -5,10 +5,11 @@ import { AxesGeometryController } from "./GeometryControllers/axes-controller.js
 import { TextGeometryController } from "./GeometryControllers/text-billboard-controller.js";
 import { ArialFontAtlas, PixelFontAtlas } from "./Render/Textures/text-atlas.js";
 import { AxesDivLabelsController } from "./GeometryControllers/axes-division-labels-controller.js";
+import { TextBillBoardCollectionController } from "./GeometryControllers/text-billboard-collection.js";
 
 export class AppEngine {
 
-    geometryControllers = {graph: [], billboard: [], point: [], line: []};
+    geometryControllers = {graph: [], line: [], billboard: [], point: []};
     renderEngine = new RenderEngine();
     camera = new Camera();
     date = new Date();
@@ -23,33 +24,44 @@ export class AppEngine {
         //this.geometryControllers.graph.push(graphCtrller);
         //this.geometryControllers.point.push(graphCtrller);
         const axesCtrller = new AxesGeometryController();
-        const range = [-3.0,3.0];
-        axesCtrller.xRange = range;
-        axesCtrller.yRange = range;
-        axesCtrller.zRange = range;
+        const xRange = [-.6,.6];
+        const yRange = [-2,1];
+        const zRange = [-40,30.1];
+        axesCtrller.xRange = xRange;
+        axesCtrller.yRange = yRange;
+        axesCtrller.zRange = zRange;
         this.geometryControllers.line.push(axesCtrller);
+
+        
+        const graphCtrller = new GraphController();
+        graphCtrller.initGraphControllerTemp([xRange, yRange, zRange]);
+        graphCtrller.modelMatrix = axesCtrller.modelMatrix;
+        this.geometryControllers.graph.push(graphCtrller);
+        this.geometryControllers.point.push(graphCtrller);
+
 
         const txtCtrller = new TextGeometryController();
         txtCtrller.camera = this.camera;
         //txtCtrller.getTextGeomArraysFromAxes(axesCtrller, new ArialFontAtlas());
 
+        
         const axisDivs = new AxesDivLabelsController();
-        axisDivs.initLabelsCtrller(new PixelFontAtlas(), this.camera);
-        axisDivs.updateAxis("X", range);
-        axisDivs.updateAxis("Y", range);
-        axisDivs.updateAxis("Z", range);
+        axisDivs.initLabelsCtrller(new ArialFontAtlas(), this.camera, axesCtrller);
+        axisDivs.updateAxis("X", xRange);
+        axisDivs.updateAxis("Y", yRange);
+        axisDivs.updateAxis("Z", zRange);
 
-        txtCtrller.genBillBoard(new PixelFontAtlas(), ".ab c . Oscar SMELLY BOY!!!.", [3,0,10]);
-        this.geometryControllers.billboard.push(txtCtrller);
+        txtCtrller.genBillBoard(new ArialFontAtlas(), ".ab c . Oscar SMELLY BOY!!!.", [0,0,0]);
+        this.geometryControllers.billboard.push(new TextBillBoardCollectionController(txtCtrller));
         //const pointCtrllertmp = new TextGeometryController();
         //pointCtrllertmp.arrays = {singularPositions: txtCtrller.positions};
         //this.geometryControllers.point.push(pointCtrllertmp);
         
-        //axisDivs.updateSuperTextGeometryController();
-        //this.geometryControllers.billboard.push(axisDivs.superTextGeometryController);
-        this.geometryControllers.billboard = this.geometryControllers.billboard.concat(axisDivs.axisMap["X"]);
-        this.geometryControllers.billboard = this.geometryControllers.billboard.concat(axisDivs.axisMap["Y"]);
-        this.geometryControllers.billboard = this.geometryControllers.billboard.concat(axisDivs.axisMap["Z"]);
+        axisDivs.updateSuperTextGeometryController();
+        this.geometryControllers.billboard.push(axisDivs.superTextGeometryController);
+        //this.geometryControllers.billboard = this.geometryControllers.billboard.concat(axisDivs.axisMap["X"]);
+        //this.geometryControllers.billboard = this.geometryControllers.billboard.concat(axisDivs.axisMap["Y"]);
+        //this.geometryControllers.billboard = this.geometryControllers.billboard.concat(axisDivs.axisMap["Z"]);
     }
 
     appLoop() {
@@ -74,9 +86,10 @@ export class AppEngine {
 
             //console.log("  UPDATING TIME COMPONENTS");
             let curr = Date.now();
-            for (const [_, geometryCtrllerList] of Object.entries(geometryControllers)) {
-                geometryCtrllerList.forEach(geometryController => {geometryController.updateTimeDependentComponents(now, deltaTime)});
-            }
+            console.log(deltaTime);
+            //for (const [_, geometryCtrllerList] of Object.entries(geometryControllers)) {
+            //    geometryCtrllerList.forEach(geometryController => {geometryController.updateTimeDependentComponents(now, deltaTime)});
+            // }
             //console.log("  UPDATING TIME COMPONENTS FINISHED. TIME TAKEN: ", Date.now() - curr);
 
             let cur = Date.now();
