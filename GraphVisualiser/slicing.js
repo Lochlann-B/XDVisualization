@@ -14,6 +14,7 @@ function turnUserInputIntoFn(userFn) {
   
   // Function to partially apply specific arguments to the original function by their indices
   function partiallyApplyByIndex(fn, indices, ...args) {
+    if(indices.length == 0) { return fn; }
     return function(...moreArgs) {
       let argArray = new Array(fn.length).fill(undefined);
       
@@ -30,12 +31,9 @@ function turnUserInputIntoFn(userFn) {
       return fn(...argArray); // Call the original function
     };
   }
-  
-  // Usage:
-   // Fill in only the second argument (index 1)
 
 function sliceFunction(fn, argIndices, argValues) {
-    return partiallyApplyByIndex(fn.fn, argIndices, ...argValues);
+    return partiallyApplyByIndex(fn, argIndices, ...argValues);
 }
 
 export { sliceFunction, turnUserInputIntoFn, partiallyApplyByIndex };

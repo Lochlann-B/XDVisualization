@@ -3,7 +3,6 @@ import { tessellate } from "./tessellator.js";
 
 export class GraphController extends GeometryController {
     arrays = undefined;
-    usesColour = false;
     modelMatrix = mat4.create();
     fn = undefined;
 
@@ -15,11 +14,19 @@ export class GraphController extends GeometryController {
         this.xSamples = {range: range[0], sampleCount: samples};
         this.ySamples = {range: range[1], sampleCount: samples};
         this.zSamples = {range: range[2]};
-        this.arrays = tessellate(fn, this.xSamples, this.ySamples, this.zSamples);
+        this.fn = fn;
+        tessellate(fn, this.xSamples, this.ySamples, this.zSamples).then(res => this.arrays = res );
     }
 
     updateTimeDependentComponents(time, deltaTime) {
         //mat4.rotateY(this.modelMatrix, this.modelMatrix, deltaTime);
+    }
+
+    updateRanges(ranges) {
+        this.xSamples = {range: ranges[0], sampleCount: this.xSamples.sampleCount};
+        this.ySamples = {range: ranges[1], sampleCount: this.ySamples.sampleCount};
+        this.zSamples = {range: ranges[2]};
+        tessellate(this.fn, this.xSamples, this.ySamples, this.zSamples).then(res => this.arrays = res );
     }
 
     getGraphGeometryInfo() {

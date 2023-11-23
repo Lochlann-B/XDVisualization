@@ -1,15 +1,27 @@
+import { tessellate } from "../GraphVisualiser/tessellator.js";
+
 export class VrController {
     controllers = {left: null, right: null};
     xrSession = null;
     controllerGeometries = [];
     refSpace = null;
     axesModelMatrix = null;
+    axesController = null;
+    axesDivLabelsController = null;
+    sliceController = null;
 
     prevRotateButtonPressed = false;
     initialRotation = vec3.create();
 
     prevMoveButtonPressed = false;
     initialMovement = vec3.create();
+
+    prevZoomOutButtonPressed = false;
+    prevZoomInButtonPressed = false;
+
+    prevSignButtonPressed = false;
+    prevToggleSliceButtonPressed = false;
+    curSliceIdx = 0;
 
     updateInputSources(event) {
         const inputSourceList = event.session.inputSources;
@@ -30,9 +42,13 @@ export class VrController {
             //this.controllers.right = inputSourceList.length > 1 ? inputSourceList[1] : null;
     }
 
-    constructor(xrsess, axesModelMatrix) {
+    constructor(xrsess, axesController, graphController, sliceController) {
         this.xrSession = xrsess;
-        this.axesModelMatrix = axesModelMatrix;
+        this.axesModelMatrix = axesController.modelMatrix;
+        this.axesController = axesController;
+        this.axesDivLabelsController = axesController.axisDivLabelsController;
+        this.graphController = graphController;
+        this.sliceController = sliceController;
 
        // this.updateInputSources({session: xrsess});
 
@@ -53,8 +69,99 @@ export class VrController {
             
             this.checkGraphRotateButton();
             this.checkGraphMoveButton();
+            this.checkGraphZoomButton();
+            this.checkSliceButton();
             //console.log(frame.getPose(inputSource.gripSpace, this.xrReferenceSpace));
             //console.log(inputSource);  
+    }
+
+    checkSliceButton() {
+        if(this.sliceController.filledIdxs.length == 0) { return; }
+        if(this.controllers.right.gamepad.buttons[4].pressed) {
+            if(!this.toggleSliceButton) {
+                this.curSliceIdx = (this.curSliceIdx + 1)%(this.sliceController.filledIdxs.length);
+            }
+            this.toggleSliceButton = true;
+        } else { this.toggleSliceButton = false; }
+        if(this.controllers.right.gamepad.buttons[0].pressed) {
+            this.sliceController.sliceVals[this.curSliceIdx] += 0.1;
+            tessellate(this.sliceController.slicedFn, this.graphController.xSamples, this.graphController.ySamples, this.graphController.zSamples).then(res => this.graphController.arrays = res);
+        }
+        if(this.controllers.right.gamepad.buttons[1].pressed) {
+            this.sliceController.sliceVals[this.curSliceIdx] -= 0.1;
+            tessellate(this.sliceController.slicedFn, this.graphController.xSamples, this.graphController.ySamples, this.graphController.zSamples).then(res => this.graphController.arrays = res);
+        }
+    }
+
+    /*
+    checkSliceButton() {
+        let ranges = this.getRanges;
+        let sign = 1;
+        if(this.controllers.right.gamepad.buttons[0].pressed) {
+
+        }
+        if(this.controllers.left.gamepad.buttons[4].pressed) {
+            // X L
+            ranges[0][0] -= 0.05;
+            this.updateRanges(ranges);
+        }
+        if(this.controllers.left.gamepad.buttons[4].pressed) {
+            // X L
+            ranges[0][1] -= 0.05;
+            this.updateRanges(ranges);
+        }
+        if(this.controllers.left.gamepad.buttons[4].pressed) {
+            // X L
+            ranges[0][0] -= 0.05;
+            this.updateRanges(ranges);
+        }
+        if(this.controllers.left.gamepad.buttons[4].pressed) {
+            // X L
+            ranges[0][0] -= 0.05;
+            this.updateRanges(ranges);
+        }
+        if(this.controllers.left.gamepad.buttons[4].pressed) {
+            // X L
+            ranges[0][0] -= 0.05;
+            this.updateRanges(ranges);
+        }
+        if(this.controllers.left.gamepad.buttons[4].pressed) {
+            // X L
+            ranges[0][0] -= 0.05;
+            this.updateRanges(ranges);
+        }
+    }
+    */
+
+    getRanges() {
+        return [this.axesController.xRange, this.axesController.yRange, this.axesController.zRange];
+    }
+
+    updateRanges(newRanges) {
+        this.graphController.updateRanges(newRanges);
+        this.axesController.updateRanges(newRanges);
+    }
+
+    checkGraphZoomButton() {
+        if(this.controllers.left.gamepad.buttons[3].pressed) {
+            if(!this.prevZoomOutButtonPressed) {
+                let ranges = this.getRanges();
+                let newRanges = ranges.map(range => range.map(bound => bound*1.1));
+                this.updateRanges(newRanges);
+                //this.axesDivLabelsController.updateAxes(newRanges);
+            }
+            this.prevZoomOutButtonPressed = true;
+        } else { this.prevZoomOutButtonPressed = false; }
+        if(this.controllers.right.gamepad.buttons[3].pressed) {
+            if(!this.prevZoomInButtonPressed) {
+                let ranges = [this.axesController.xRange, this.axesController.yRange, this.axesController.zRange];
+                let newRanges = ranges.map(range => range.map(bound => bound*0.9));
+                this.graphController.updateRanges(newRanges);
+                this.axesController.updateRanges(newRanges);
+                //this.axesDivLabelsController.updateAxes(newRanges);
+            }
+            this.prevZoomInButtonPressed = true;
+        } else { this.prevZoomInButtonPressed = false; }
     }
 
     checkGraphMoveButton() {

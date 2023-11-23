@@ -14,6 +14,7 @@ import { VrController } from "./Controllers/vr-controller.js";
 export class AppEngine {
 
     geometryControllers = {graph: [], line: [], billboard: [], point: []};
+    componentControllers = {graph: [], line: [], billboard: [], point: []};
     //controllerGeometryControllers = {line: []};
     renderEngine = new RenderEngine();
     camera = new Camera();
@@ -22,6 +23,8 @@ export class AppEngine {
     controllers = [];
     frame = null;
     xrSession = null;
+    graphController = null;
+    graphSlicer = null;
     
 
     appInit() {
@@ -56,9 +59,11 @@ export class AppEngine {
         axesCtrller.zRange = zRange;
         this.geometryControllers.line.push(axesCtrller);
 
+        this.graphSlicer = new SlicingController((x,y,z) => x**2 + y**2 + z**2);
+
         const graphCtrller = new GraphController();
         //graphCtrller.initGraphControllerTemp(slicedFn, [xRange, yRange, zRange]);
-        graphCtrller.initGraphControllerTemp((x,y) => x**2 + y**2, [xRange, yRange, zRange]);
+        graphCtrller.initGraphControllerTemp(this.graphSlicer.slicedFn, [xRange, yRange, zRange]);
         graphCtrller.modelMatrix = axesCtrller.modelMatrix;
         this.geometryControllers.graph.push(graphCtrller);
         this.geometryControllers.point.push(graphCtrller);
@@ -78,6 +83,8 @@ export class AppEngine {
 
         txtCtrller.genBillBoard(new ArialFontAtlas(), ".ab c . Oscar SMELLY BOY!!!.", [0,0,0]);
         this.geometryControllers.billboard.push(new TextBillBoardCollectionController(txtCtrller));
+
+        axesCtrller.divLabelsController = axisDivs;
         //const pointCtrllertmp = new TextGeometryController();
         //pointCtrllertmp.arrays = {singularPositions: txtCtrller.positions};
         //this.geometryControllers.point.push(pointCtrllertmp);
@@ -95,7 +102,7 @@ export class AppEngine {
     appLoop(session) {
         
         let xrSession = session;
-        const Controllers = new VrController(xrSession, this.geometryControllers.line[0].modelMatrix);
+        const Controllers = new VrController(xrSession, this.geometryControllers.line[0], this.geometryControllers.graph[0], this.graphSlicer);
         let ctrllerL = new Controller();
         ctrllerL.initController();
         let ctrllerR = new Controller();

@@ -22,6 +22,11 @@ export class AxesDivLabelsController extends GeometryController {
         this.superTextGeometryController.camera = this.camera;
     }
 
+    updateAxes(ranges) {
+        let axis = ["X","Y","Z"];
+        ranges.forEach((range, idx) => {this.updateAxis(axis[idx], range)});
+    }
+
     updateAxis(axis, ranges, divs=10) {
         let offsetL = 0;
         let offsetU = 0;

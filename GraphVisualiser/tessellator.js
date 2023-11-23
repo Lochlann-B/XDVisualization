@@ -1,4 +1,4 @@
-function tessellate(fn, xSamples, ySamples, zSamples) {
+async function tessellate(fn, xSamples, ySamples, zSamples) {
 
     let triangles = [];
     let idxs = [];

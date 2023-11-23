@@ -140,11 +140,11 @@ export class TextGeometryController extends GeometryController {
     }
 
     genBillBoard(fontAtlas, string, pos) {
-        let positions = [];
+        //let positions = [];
         let arrays = this.gen2DGeomAndTexturesFromString(fontAtlas, string);
-        for(let i = 0; i < arrays.positions.length/2; i++) {
-            positions = positions.concat(pos);
-        }
+        //for(let i = 0; i < arrays.positions.length/2; i++) {
+        //    positions = positions.concat(pos);
+        //}
 
         let modelMatrix = mat4.create();
 

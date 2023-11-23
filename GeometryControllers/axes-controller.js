@@ -9,6 +9,8 @@ export class AxesGeometryController extends GeometryController {
     zrange = [0,1];
     arrays = {positions: [], colours: []};
 
+    divLabelsController = null;
+
     set xRange(xRange) {
         this.update([1,0,0], xRange);
     }
@@ -85,10 +87,17 @@ export class AxesGeometryController extends GeometryController {
         this.arrays.positions = lines;
         this.arrays.colours = colours;
         let oldScale = vec3.create();
-        mat4.getScaling(oldScale, this.modelMatrix)
+        mat4.getScaling(oldScale, this.modelMatrix);
         vec3.inverse(oldScale, oldScale);
         mat4.scale(this.modelMatrix, this.modelMatrix, oldScale);
         mat4.scale(this.modelMatrix, this.modelMatrix, vec3.fromValues(0.4/Math.abs(rRanges[0]), 0.4/Math.abs(rRanges[1]), 0.4/Math.abs(rRanges[2])));
+    }
+
+    updateRanges(ranges) {
+        //let axisLabel = ["X","Y","Z"];
+        ranges.forEach((range, idx) => {let axis = [0,0,0]; axis[idx] = 1; this.update(axis, range);});
+        this.divLabelsController.updateAxes(ranges);
+        this.divLabelsController.updateSuperTextGeometryController();
     }
 
     /*
