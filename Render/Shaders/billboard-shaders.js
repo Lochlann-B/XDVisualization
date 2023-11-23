@@ -95,6 +95,42 @@ export class BillBoardShader extends Shader {
         };
     }
 
+    setUniformsAndState(gl, projectionMatrix, viewMatrix) {
+
+        // Tell WebGL to use our program when drawing
+        gl.useProgram(this.programInfo.program);
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+        gl.depthMask(false);
+        gl.disable(gl.DEPTH_TEST);
+
+           // Set the shader uniforms
+      gl.uniformMatrix4fv(
+        this.programInfo.uniformLocations.projectionMatrix,
+        false,
+        projectionMatrix,
+    );
+    gl.uniformMatrix4fv(
+      this.programInfo.uniformLocations.viewMatrix,
+      false,
+      viewMatrix,
+      );
+      
+      //gl.uniform3fv(
+      //    this.programInfo.uniformLocations.uWorldCamera,
+       //   geometryInfo.camera.pos,
+      //);
+  
+      // Tell WebGL we want to affect texture unit 1
+      gl.activeTexture(gl.TEXTURE1);
+  
+      // Bind the texture to texture unit 1
+      gl.bindTexture(gl.TEXTURE_2D, this.texture);
+  
+      // Tell the shader we bound the texture to texture unit 1
+      gl.uniform1i(this.programInfo.uniformLocations.uSampler, 1);
+    }
+
     render(gl, projectionMatrix, viewMatrix, geometryInfo, loadedBuffers) {
         // TODO: Move getting the buffer data to another function
 
@@ -129,10 +165,11 @@ export class BillBoardShader extends Shader {
        //let uProjectMat = mat4.create();
        //mat4.translate(uProjectMat, projectionMatrix, vec3.fromValues(viewPos[0], viewPos[1], viewPos[2]));
 
-       gl.enable(gl.BLEND);
-        gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-        gl.depthMask(false);
-        gl.disable(gl.DEPTH_TEST);
+       // AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+    //    gl.enable(gl.BLEND);
+    //     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    //     gl.depthMask(false);
+    //     gl.disable(gl.DEPTH_TEST);
 
     //    gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
     //     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -149,35 +186,35 @@ export class BillBoardShader extends Shader {
         // Tell WebGL which indices to use to index the vertices
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, loadedBuffers.indices);
         
-        // Tell WebGL to use our program when drawing
-        gl.useProgram(this.programInfo.program);
+        // // Tell WebGL to use our program when drawing
+        // gl.useProgram(this.programInfo.program);
         
 
-         // Set the shader uniforms
-      gl.uniformMatrix4fv(
-          this.programInfo.uniformLocations.projectionMatrix,
-          false,
-          projectionMatrix,
-      );
-      gl.uniformMatrix4fv(
-        this.programInfo.uniformLocations.viewMatrix,
-        false,
-        viewMatrix,
-        );
+    //      // Set the shader uniforms
+    //   gl.uniformMatrix4fv(
+    //       this.programInfo.uniformLocations.projectionMatrix,
+    //       false,
+    //       projectionMatrix,
+    //   );
+    //   gl.uniformMatrix4fv(
+    //     this.programInfo.uniformLocations.viewMatrix,
+    //     false,
+    //     viewMatrix,
+    //     );
         
-        //gl.uniform3fv(
-        //    this.programInfo.uniformLocations.uWorldCamera,
-         //   geometryInfo.camera.pos,
-        //);
+    //     //gl.uniform3fv(
+    //     //    this.programInfo.uniformLocations.uWorldCamera,
+    //      //   geometryInfo.camera.pos,
+    //     //);
     
-        // Tell WebGL we want to affect texture unit 1
-        gl.activeTexture(gl.TEXTURE1);
+    //     // Tell WebGL we want to affect texture unit 1
+    //     gl.activeTexture(gl.TEXTURE1);
     
-        // Bind the texture to texture unit 1
-        gl.bindTexture(gl.TEXTURE_2D, this.texture);
+    //     // Bind the texture to texture unit 1
+    //     gl.bindTexture(gl.TEXTURE_2D, this.texture);
     
-        // Tell the shader we bound the texture to texture unit 1
-        gl.uniform1i(this.programInfo.uniformLocations.uSampler, 1);
+    //     // Tell the shader we bound the texture to texture unit 1
+    //     gl.uniform1i(this.programInfo.uniformLocations.uSampler, 1);
         
         
     

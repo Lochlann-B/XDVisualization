@@ -103,6 +103,7 @@ export class RenderEngine {
         */
 
         for (const [type, shader] of Object.entries(this.shaderList)) {
+            shader.setUniformsAndState(gl, projectionMatrix, viewMatrix);
             for (const geometryInfo of geometryControllers[type]) {
                 const loadedBuffer = shader.getAndLoadBuffers(gl, geometryInfo);
                 shader.render(gl, projectionMatrix, viewMatrix, geometryInfo, loadedBuffer);

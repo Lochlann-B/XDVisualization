@@ -10,6 +10,7 @@ import { sliceFunction, turnUserInputIntoFn } from "./GraphVisualiser/slicing.js
 import { SlicingController } from "./GraphVisualiser/slicingController.js";
 import { Controller } from "./Controllers/controller.js";
 import { VrController } from "./Controllers/vr-controller.js";
+import { InfoCollator } from "./GraphVisualiser/collate-info.js";
 
 export class AppEngine {
 
@@ -25,7 +26,7 @@ export class AppEngine {
     xrSession = null;
     graphController = null;
     graphSlicer = null;
-    
+    infoCollator = null;
 
     appInit() {
         this.camera.initControls();
@@ -49,17 +50,19 @@ export class AppEngine {
         var slicingController = new SlicingController();
         */
         
+        const font = new ArialFontAtlas();
+        this.infoCollator = new InfoCollator(font, [-0.3,0.0,-0.3]);
 
         const axesCtrller = new AxesGeometryController();
-        const xRange = [-3,3];
-        const yRange = [-4,4];
-        const zRange = [-0.5,4];
+        const xRange = [-1,1];
+        const yRange = [-1,1];
+        const zRange = [-1,1];
         axesCtrller.xRange = xRange;
         axesCtrller.yRange = yRange;
         axesCtrller.zRange = zRange;
         this.geometryControllers.line.push(axesCtrller);
 
-        this.graphSlicer = new SlicingController((x,y,z) => x**2 + y**2 + z**2);
+        this.graphSlicer = new SlicingController((x,y,z,w) => x**2 + y**2 + z**2 - w**2);
 
         const graphCtrller = new GraphController();
         //graphCtrller.initGraphControllerTemp(slicedFn, [xRange, yRange, zRange]);
@@ -76,12 +79,12 @@ export class AppEngine {
 
         
         const axisDivs = new AxesDivLabelsController();
-        axisDivs.initLabelsCtrller(new ArialFontAtlas(), this.camera, axesCtrller);
+        axisDivs.initLabelsCtrller(font, this.camera, axesCtrller);
         axisDivs.updateAxis("X", xRange);
         axisDivs.updateAxis("Y", yRange);
         axisDivs.updateAxis("Z", zRange);
 
-        txtCtrller.genBillBoard(new ArialFontAtlas(), ".ab c . Oscar SMELLY BOY!!!.", [0,0,0]);
+        txtCtrller.genBillBoard(font, ".ab c . Oscar SMELLY BOY!!!.", [0,0,0]);
         this.geometryControllers.billboard.push(new TextBillBoardCollectionController(txtCtrller));
 
         axesCtrller.divLabelsController = axisDivs;
@@ -89,12 +92,16 @@ export class AppEngine {
         //pointCtrllertmp.arrays = {singularPositions: txtCtrller.positions};
         //this.geometryControllers.point.push(pointCtrllertmp);
         
-        axisDivs.updateSuperTextGeometryController();
+        axisDivs.superTextGeometryController.updateSuperTextGeometryController(axisDivs.getFlattenedGeoCtrlList(), axisDivs.modelMatrix);
         this.geometryControllers.billboard.push(axisDivs.superTextGeometryController);
+        this.infoCollator.camera = this.camera;
+        this.geometryControllers.billboard.push(this.infoCollator.superGeometryController);
         //this.geometryControllers.billboard = this.geometryControllers.billboard.concat(axisDivs.axisMap["X"]);
         //this.geometryControllers.billboard = this.geometryControllers.billboard.concat(axisDivs.axisMap["Y"]);
         //this.geometryControllers.billboard = this.geometryControllers.billboard.concat(axisDivs.axisMap["Z"]);
-
+        this.infoCollator.updateSeveral(
+            ["function", "xRange", "yRange", "zRange", "filledArgIdxs", "filledArgVals", "currentIndexSlice"], 
+            [this.graphSlicer.unSlicedFn, xRange, yRange, zRange, this.graphSlicer.filledIdxs, this.graphSlicer.filledVals, 0]);
 
         //navigator.xr.requestSession("inline").then(this.renderEngine.init_engine);
     }
@@ -102,7 +109,21 @@ export class AppEngine {
     appLoop(session) {
         
         let xrSession = session;
-        const Controllers = new VrController(xrSession, this.geometryControllers.line[0], this.geometryControllers.graph[0], this.graphSlicer);
+
+        // const overlay = session.createOverlay('immersive-dom');
+        // const divElement = document.createElement('div');
+        // divElement.textContent = 'Hello, XR!';
+        // document.body.appendChild(divElement);
+
+        // // Attach the HTML element to the overlay
+        // overlay.add(divElement);
+
+        // // Set position, size, and other properties of the overlay
+        // overlay.offsetReferenceSpace = someReferenceSpace;
+        // overlay.offset = { transform: { position: { x: 0, y: 2, z: -3 } } };
+
+
+        const Controllers = new VrController(xrSession, this.geometryControllers.line[0], this.geometryControllers.graph[0], this.graphSlicer, this.infoCollator);
         let ctrllerL = new Controller();
         ctrllerL.initController();
         let ctrllerR = new Controller();
@@ -110,7 +131,6 @@ export class AppEngine {
         Controllers.controllerGeometries = [ctrllerL, ctrllerR];
         this.geometryControllers.line = this.geometryControllers.line.concat([ctrllerL, ctrllerR]);
         //this.controllerGeometryControllers.line = this.controllerGeometryControllers.line.concat([ctrllerL, ctrllerR]);
-        
 
         let then = 0;
         let animationFrameRequestID = 0;

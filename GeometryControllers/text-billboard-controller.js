@@ -142,16 +142,27 @@ export class TextGeometryController extends GeometryController {
     genBillBoard(fontAtlas, string, pos) {
         //let positions = [];
         let arrays = this.gen2DGeomAndTexturesFromString(fontAtlas, string);
+        let maxX = 0;
+        let maxY = 0;
+        // for (let i = 0; i < arrays.positions.length/2; i += 2) {
+        //     maxX = Math.max(maxX, arrays.positions[i]);
+        //     maxY = Math.max(maxY, arrays.positions[i+1]);
+        // }
+        // arrays.positions.map((pos, idx) => idx%2 ? pos-maxY/2 : pos-maxX/2);
         //for(let i = 0; i < arrays.positions.length/2; i++) {
         //    positions = positions.concat(pos);
         //}
 
         let modelMatrix = mat4.create();
 
-        mat4.translate(
+        // mat4.translate(
+        //     modelMatrix,
+        //     modelMatrix,
+        //     vec4.transformMat4(vec4.create(), vec4.fromValues(pos[0], pos[1], pos[2], 1.0), this.modelMatrix));
+         mat4.translate(
             modelMatrix,
             modelMatrix,
-            vec4.transformMat4(vec4.create(), vec4.fromValues(pos[0], pos[1], pos[2], 1.0), this.modelMatrix));
+            vec4.fromValues(pos[0], pos[1], pos[2], 1.0));
 
         this.modelMatrix = modelMatrix;
         this.arrays = arrays;

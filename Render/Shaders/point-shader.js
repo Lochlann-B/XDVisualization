@@ -82,6 +82,18 @@ export class PointShader extends Shader {
         };
     }
 
+    setUniformsAndState(gl, projectionMatrix, viewMatrix) { 
+         // Tell WebGL to use our program when drawing
+         gl.useProgram(this.programInfo.program);
+
+         // Set the shader uniforms
+       gl.uniformMatrix4fv(
+           this.programInfo.uniformLocations.projectionMatrix,
+           false,
+           projectionMatrix,
+       );
+     }
+
     render(gl, projectionMatrix, viewMatrix, geometryInfo, loadedBuffers) {
         if (geometryInfo.arrays.singularPositions.length < 3) {
             return;
@@ -97,15 +109,15 @@ export class PointShader extends Shader {
           // buffer into the vertexPosition attribute.
           setPositionAttribute(gl, loadedBuffers.position, this.programInfo.attribLocations.vertexPosition);
         
-          // Tell WebGL to use our program when drawing
-          gl.useProgram(this.programInfo.program);
+        //   // Tell WebGL to use our program when drawing
+        //   gl.useProgram(this.programInfo.program);
 
-          // Set the shader uniforms
-        gl.uniformMatrix4fv(
-            this.programInfo.uniformLocations.projectionMatrix,
-            false,
-            projectionMatrix,
-        );
+        //   // Set the shader uniforms
+        // gl.uniformMatrix4fv(
+        //     this.programInfo.uniformLocations.projectionMatrix,
+        //     false,
+        //     projectionMatrix,
+        // );
         gl.uniformMatrix4fv(
             this.programInfo.uniformLocations.modelViewMatrix,
             false,

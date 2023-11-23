@@ -13,6 +13,16 @@ export class TextBillBoardCollectionController extends GeometryController {
         this.modelMatrices = new Array(textBillBoardController.arrays.positions.length/2).fill(textBillBoardController.modelMatrix);
     } 
 
+    updateSuperTextGeometryController(flattenedGeometryControllerList, parentModelMatrix) {
+        //let flattenedGeometryControllerList = Object.keys(this.axisMap).map(key => this.axisMap[key]).reduce((allAxes, axisList) => allAxes = allAxes.concat(axisList), []);
+        this.modelMatrices = flattenedGeometryControllerList.reduce((res, geoCtrl) => res = res.concat(new Array(geoCtrl.arrays.positions.length/2).fill(geoCtrl.modelMatrix)), []);
+        this.arrays.positions = flattenedGeometryControllerList.reduce((res, geoCtrl) => res = res.concat(geoCtrl.arrays.positions), []);
+        this.arrays.textureCoords = flattenedGeometryControllerList.reduce((res, geoCtrl) => res = res.concat(geoCtrl.arrays.textureCoords), []);
+        this.arrays.indices = flattenedGeometryControllerList.reduce((res, geoCtrl) => {return {list: res.list.concat(geoCtrl.arrays.indices.map(idx => idx += res.offset)), offset: res.offset + Math.max(...geoCtrl.arrays.indices)+1}}, {list: [], offset: 0},).list;
+        this.parentModelMatrix = parentModelMatrix;
+        //this.superTextGeometryController.parentModelMatrices = new Array(this.superTextGeometryController.modelMatrices.length).fill(mat4.create());
+    }
+
     updateTimeDependentComponents(time, deltaTime) {
         return;
         //let tp = vec3.create();

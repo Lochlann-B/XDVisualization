@@ -102,6 +102,31 @@ export class GraphShader extends Shader {
         };
     }
 
+    setUniformsAndState(gl, projectionMatrix, viewMatrix) {
+        gl.useProgram(this.programInfo.program);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+        gl.depthMask(true);
+
+          // Set the shader uniforms
+          gl.uniformMatrix4fv(
+            this.programInfo.uniformLocations.projectionMatrix,
+            false,
+            projectionMatrix,
+        );
+        
+        
+    
+        // Tell WebGL we want to affect texture unit 0
+        gl.activeTexture(gl.TEXTURE0);
+    
+        // Bind the texture to texture unit 0
+        gl.bindTexture(gl.TEXTURE_2D, this.texture);
+    
+        // Tell the shader we bound the texture to texture unit 0
+        gl.uniform1i(this.programInfo.uniformLocations.uSampler, 0);
+    }
+
     render(gl, projectionMatrix, viewMatrix, geometryInfo, loadedBuffers) {
         // TODO: Move getting the buffer data to another function
         const modelMatrix = geometryInfo.modelMatrix;
@@ -109,9 +134,9 @@ export class GraphShader extends Shader {
         const modelViewMatrix = mat4.create();
         mat4.mul(modelViewMatrix, viewMatrix, modelMatrix);
 
-          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-          gl.depthMask(true);
+        //   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+        //   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+        //   gl.depthMask(true);
         
           // Tell WebGL how to pull out the positions from the position
           // buffer into the vertexPosition attribute.
@@ -123,19 +148,14 @@ export class GraphShader extends Shader {
       
         
           // Tell WebGL to use our program when drawing
-          gl.useProgram(this.programInfo.program);
+        //   gl.useProgram(this.programInfo.program);
 
-          // Set the shader uniforms
-        gl.uniformMatrix4fv(
-            this.programInfo.uniformLocations.projectionMatrix,
-            false,
-            projectionMatrix,
-        );
-        gl.uniformMatrix4fv(
+          gl.uniformMatrix4fv(
             this.programInfo.uniformLocations.modelViewMatrix,
             false,
             modelViewMatrix,
         );
+
         gl.uniform1f(
             this.programInfo.uniformLocations.zMin,
             geometryInfo.arrays.zRanges[0]
@@ -144,15 +164,35 @@ export class GraphShader extends Shader {
             this.programInfo.uniformLocations.zMax,
             geometryInfo.arrays.zRanges[1]
         );
+
+        //   // Set the shader uniforms
+        // gl.uniformMatrix4fv(
+        //     this.programInfo.uniformLocations.projectionMatrix,
+        //     false,
+        //     projectionMatrix,
+        // );
+        // gl.uniformMatrix4fv(
+        //     this.programInfo.uniformLocations.modelViewMatrix,
+        //     false,
+        //     modelViewMatrix,
+        // );
+        // gl.uniform1f(
+        //     this.programInfo.uniformLocations.zMin,
+        //     geometryInfo.arrays.zRanges[0]
+        // );
+        // gl.uniform1f(
+        //     this.programInfo.uniformLocations.zMax,
+        //     geometryInfo.arrays.zRanges[1]
+        // );
     
-        // Tell WebGL we want to affect texture unit 0
-        gl.activeTexture(gl.TEXTURE0);
+        // // Tell WebGL we want to affect texture unit 0
+        // gl.activeTexture(gl.TEXTURE0);
     
-        // Bind the texture to texture unit 0
-        gl.bindTexture(gl.TEXTURE_2D, this.texture);
+        // // Bind the texture to texture unit 0
+        // gl.bindTexture(gl.TEXTURE_2D, this.texture);
     
-        // Tell the shader we bound the texture to texture unit 0
-        gl.uniform1i(this.programInfo.uniformLocations.uSampler, 0);
+        // // Tell the shader we bound the texture to texture unit 0
+        // gl.uniform1i(this.programInfo.uniformLocations.uSampler, 0);
     
         {
             const vertexCount = geometryInfo.arrays.indices.length;

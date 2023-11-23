@@ -63,6 +63,22 @@ export class LineShader extends Shader {
         };
     }
 
+    setUniformsAndState(gl, projectionMatrix, viewMatrix) { 
+        gl.depthMask(false);
+          gl.disable(gl.DEPTH_TEST);
+
+          // Tell WebGL to use our program when drawing
+          gl.useProgram(this.programInfo.program);
+
+          // Set the shader uniforms
+        gl.uniformMatrix4fv(
+            this.programInfo.uniformLocations.projectionMatrix,
+            false,
+            projectionMatrix,
+        );
+        gl.lineWidth(10.0);
+     }
+
     render(gl, projectionMatrix, viewMatrix, geometryInfo, loadedBuffers) {
         // TODO: Move getting the buffer data to another function
         const modelMatrix = geometryInfo.modelMatrix;
@@ -77,25 +93,25 @@ export class LineShader extends Shader {
         
           //gl.enable(gl.BLEND);
           //gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-          gl.depthMask(false);
-          gl.disable(gl.DEPTH_TEST);
+        //   gl.depthMask(false);
+        //   gl.disable(gl.DEPTH_TEST);
 
-          // Tell WebGL to use our program when drawing
-          gl.useProgram(this.programInfo.program);
+        //   // Tell WebGL to use our program when drawing
+        //   gl.useProgram(this.programInfo.program);
 
-          // Set the shader uniforms
-        gl.uniformMatrix4fv(
-            this.programInfo.uniformLocations.projectionMatrix,
-            false,
-            projectionMatrix,
-        );
+        //   // Set the shader uniforms
+        // gl.uniformMatrix4fv(
+        //     this.programInfo.uniformLocations.projectionMatrix,
+        //     false,
+        //     projectionMatrix,
+        // );
         gl.uniformMatrix4fv(
             this.programInfo.uniformLocations.modelViewMatrix,
             false,
             modelViewMatrix,
         );
 
-        gl.lineWidth(10.0);
+        // gl.lineWidth(10.0);
     
         {
             const vertexCount = geometryInfo.arrays.positions.length/3;

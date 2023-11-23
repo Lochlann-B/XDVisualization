@@ -23,6 +23,8 @@ export class VrController {
     prevToggleSliceButtonPressed = false;
     curSliceIdx = 0;
 
+    infoCollator = null;
+
     updateInputSources(event) {
         const inputSourceList = event.session.inputSources;
           
@@ -42,13 +44,14 @@ export class VrController {
             //this.controllers.right = inputSourceList.length > 1 ? inputSourceList[1] : null;
     }
 
-    constructor(xrsess, axesController, graphController, sliceController) {
+    constructor(xrsess, axesController, graphController, sliceController, infoCollator) {
         this.xrSession = xrsess;
         this.axesModelMatrix = axesController.modelMatrix;
         this.axesController = axesController;
         this.axesDivLabelsController = axesController.axisDivLabelsController;
         this.graphController = graphController;
         this.sliceController = sliceController;
+        this.infoCollator = infoCollator;
 
        // this.updateInputSources({session: xrsess});
 
@@ -80,15 +83,21 @@ export class VrController {
         if(this.controllers.right.gamepad.buttons[4].pressed) {
             if(!this.toggleSliceButton) {
                 this.curSliceIdx = (this.curSliceIdx + 1)%(this.sliceController.filledIdxs.length);
+                this.infoCollator.update("currentIndexSlice", this.curSliceIdx);
             }
             this.toggleSliceButton = true;
         } else { this.toggleSliceButton = false; }
         if(this.controllers.right.gamepad.buttons[0].pressed) {
-            this.sliceController.sliceVals[this.curSliceIdx] += 0.1;
+            this.sliceController.sliceVals[this.curSliceIdx] += this.controllers.right.gamepad.buttons[0].value;
+            this.infoCollator.update("filledArgVals", this.sliceController.sliceVals);
+            this.graphController.fn = this.sliceController.slicedFn;
             tessellate(this.sliceController.slicedFn, this.graphController.xSamples, this.graphController.ySamples, this.graphController.zSamples).then(res => this.graphController.arrays = res);
+            
         }
         if(this.controllers.right.gamepad.buttons[1].pressed) {
-            this.sliceController.sliceVals[this.curSliceIdx] -= 0.1;
+            this.sliceController.sliceVals[this.curSliceIdx] -= this.controllers.right.gamepad.buttons[1].value;
+            this.infoCollator.update("filledArgVals", this.sliceController.sliceVals);
+            this.graphController.fn = this.sliceController.slicedFn;
             tessellate(this.sliceController.slicedFn, this.graphController.xSamples, this.graphController.ySamples, this.graphController.zSamples).then(res => this.graphController.arrays = res);
         }
     }
@@ -138,6 +147,9 @@ export class VrController {
     }
 
     updateRanges(newRanges) {
+        this.infoCollator.update("xRange", newRanges[0]);
+        this.infoCollator.update("yRange", newRanges[1]);
+        this.infoCollator.update("zRange", newRanges[2]);
         this.graphController.updateRanges(newRanges);
         this.axesController.updateRanges(newRanges);
     }
@@ -156,8 +168,9 @@ export class VrController {
             if(!this.prevZoomInButtonPressed) {
                 let ranges = [this.axesController.xRange, this.axesController.yRange, this.axesController.zRange];
                 let newRanges = ranges.map(range => range.map(bound => bound*0.9));
-                this.graphController.updateRanges(newRanges);
-                this.axesController.updateRanges(newRanges);
+                this.updateRanges(newRanges);
+                //this.graphController.updateRanges(newRanges);
+                //this.axesController.updateRanges(newRanges);
                 //this.axesDivLabelsController.updateAxes(newRanges);
             }
             this.prevZoomInButtonPressed = true;
@@ -173,7 +186,7 @@ export class VrController {
             }
             let prevMovement = vec3.fromValues(...this.initialMovement);
             this.initialMovement = mat4.getTranslation(vec3.create(), this.controllerGeometries[0].modelMatrix);
-            let deltaXYZ = vec4.fromValues(5*(this.initialMovement[0]-prevMovement[0]), 5*(this.initialMovement[1]-prevMovement[1]), 5*(this.initialMovement[2]-prevMovement[2]), 1.0);
+            let deltaXYZ = vec4.fromValues(10*(this.initialMovement[0]-prevMovement[0]), 10*(this.initialMovement[1]-prevMovement[1]), 10*(this.initialMovement[2]-prevMovement[2]), 1.0);
             //let tDeltaXYZ = vec4.create();
             //let axesRotation = mat4.getRotation(quat.create(), this.axesModelMatrix);
             let axesRotation = quat.create();
@@ -241,7 +254,7 @@ export class VrController {
             let magDeltaTheta = Math.sqrt(deltaXZ[0]**2 + deltaXZ[1]**2);
             if(magDeltaTheta == 0) { return; }
             let sign = deltaXZ[0] == 0 ? (deltaXZ[1])/(Math.abs(deltaXZ[1])) : (deltaXZ[0])/(Math.abs(deltaXZ[0]));
-            let deltaTheta = 5*sign*magDeltaTheta;
+            let deltaTheta = 7*sign*magDeltaTheta;
             mat4.rotateZ(this.axesModelMatrix, this.axesModelMatrix, deltaTheta);
         }
         else {

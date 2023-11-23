@@ -86,6 +86,10 @@ export class AxesDivLabelsController extends GeometryController {
 
     }
 
+    getFlattenedGeoCtrlList() {
+        return Object.keys(this.axisMap).map(key => this.axisMap[key]).reduce((allAxes, axisList) => allAxes = allAxes.concat(axisList), []);
+    }
+
     updateSuperTextGeometryController() {
         let flattenedGeometryControllerList = Object.keys(this.axisMap).map(key => this.axisMap[key]).reduce((allAxes, axisList) => allAxes = allAxes.concat(axisList), []);
         this.superTextGeometryController.modelMatrices = flattenedGeometryControllerList.reduce((res, geoCtrl) => res = res.concat(new Array(geoCtrl.arrays.positions.length/2).fill(geoCtrl.modelMatrix)), []);
