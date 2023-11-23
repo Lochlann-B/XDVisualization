@@ -77,7 +77,7 @@ export class RenderEngine {
 
         //const viewMatrix = mat4.create();
         const viewMatrix = view.transform.inverse.matrix;
-        mat4.scale(viewMatrix, viewMatrix, vec3.fromValues(5.0, 5.0, 5.0));
+        //mat4.scale(viewMatrix, viewMatrix, vec3.fromValues(5.0, 5.0, 5.0));
 
         /*
         // Create rotation matrices for each axis

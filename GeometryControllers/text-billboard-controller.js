@@ -58,7 +58,7 @@ export class TextGeometryController extends GeometryController {
 
     gen2DGeomAndTexturesFromString(fontAtlas, s) {
         // TODO: move
-        let scale = 0.001;
+        let scale = 0.0005;
 
         let vertexCount = s.length*4;
         //let vertexCount = s.length*6;

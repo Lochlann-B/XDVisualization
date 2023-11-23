@@ -1,5 +1,5 @@
 export class Camera {
-    pos = [0.0,1.0,1.0];
+    pos = [0.0,0.0,0.0];
     angle = {X: 0.0, Y: 0.0, Z: 0.0};
 
     inverseOrientation = quat.create();
@@ -14,7 +14,7 @@ export class Camera {
     }
 
     applyViewerControls(refSpace) {
-      /*
+      
       quat.identity(this.inverseOrientation);
       quat.rotateX(this.inverseOrientation, this.inverseOrientation, -this.angle.X);
       quat.rotateY(this.inverseOrientation, this.inverseOrientation, -this.angle.Y);
@@ -29,16 +29,16 @@ export class Camera {
           w: this.inverseOrientation[3],
         },
       );
-      */
-      let newTransform = new XRRigidTransform(
-        { x: -this.pos[0], y: -this.pos[1], z: -this.pos[2]},
-        {
-          x: this.angle.X,
-          y: this.angle.Y,
-          z: this.angle.Z,
-          w: 1.0,
-        },
-      );
+      
+      // let newTransform = new XRRigidTransform(
+      //   { x: -this.pos[0], y: -this.pos[1], z: -this.pos[2]},
+      //   {
+      //     x: -this.angle.X,
+      //     y: -this.angle.Y,
+      //     z: -this.angle.Z,
+      //     w: 0.0,
+      //   },
+      // );
 
       return refSpace.getOffsetReferenceSpace(newTransform);
 

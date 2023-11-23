@@ -28,7 +28,7 @@ const vsSource = `
             gl_PointSize = 1.0; // Value doesn't matter since z value of 0 won't be drawn anyways
         }
         else {
-            gl_PointSize = clamp(-10.0/(mvPosition[2]), 3.0, 20.0);
+            gl_PointSize = clamp(-10.0/(mvPosition[2]), 3.0, 10.0);
         }
         
     }

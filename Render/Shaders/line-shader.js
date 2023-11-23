@@ -75,7 +75,11 @@ export class LineShader extends Shader {
           setPositionAttribute(gl, loadedBuffers.position, this.programInfo.attribLocations.vertexPosition);
           setColorAttribute(gl, loadedBuffers.colour, this.programInfo.attribLocations.colour);
         
-        
+          //gl.enable(gl.BLEND);
+          //gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+          gl.depthMask(false);
+          gl.disable(gl.DEPTH_TEST);
+
           // Tell WebGL to use our program when drawing
           gl.useProgram(this.programInfo.program);
 

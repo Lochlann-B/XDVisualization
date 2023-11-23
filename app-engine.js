@@ -8,15 +8,20 @@ import { AxesDivLabelsController } from "./GeometryControllers/axes-division-lab
 import { TextBillBoardCollectionController } from "./GeometryControllers/text-billboard-collection.js";
 import { sliceFunction, turnUserInputIntoFn } from "./GraphVisualiser/slicing.js";
 import { SlicingController } from "./GraphVisualiser/slicingController.js";
+import { Controller } from "./Controllers/controller.js";
+import { VrController } from "./Controllers/vr-controller.js";
 
 export class AppEngine {
 
     geometryControllers = {graph: [], line: [], billboard: [], point: []};
+    //controllerGeometryControllers = {line: []};
     renderEngine = new RenderEngine();
     camera = new Camera();
     date = new Date();
     xrReferenceSpace = null;
-
+    controllers = [];
+    frame = null;
+    xrSession = null;
     
 
     appInit() {
@@ -44,7 +49,7 @@ export class AppEngine {
 
         const axesCtrller = new AxesGeometryController();
         const xRange = [-3,3];
-        const yRange = [-2,1];
+        const yRange = [-4,4];
         const zRange = [-0.5,4];
         axesCtrller.xRange = xRange;
         axesCtrller.yRange = yRange;
@@ -90,38 +95,69 @@ export class AppEngine {
     appLoop(session) {
         
         let xrSession = session;
+        const Controllers = new VrController(xrSession, this.geometryControllers.line[0].modelMatrix);
+        let ctrllerL = new Controller();
+        ctrllerL.initController();
+        let ctrllerR = new Controller();
+        ctrllerR.initController();
+        Controllers.controllerGeometries = [ctrllerL, ctrllerR];
+        this.geometryControllers.line = this.geometryControllers.line.concat([ctrllerL, ctrllerR]);
+        //this.controllerGeometryControllers.line = this.controllerGeometryControllers.line.concat([ctrllerL, ctrllerR]);
+        
 
         let then = 0;
         let animationFrameRequestID = 0;
-
+        let i = true;
         const geometryControllers = this.geometryControllers;
         const renderEngine = this.renderEngine;
         const camera = this.camera;
         let current = 0;
+        //const controllerGeometryControllers = this.controllerGeometryControllers;
 
         xrSession.updateRenderState({
             baseLayer: new XRWebGLLayer(xrSession, this.renderEngine.gl),
           });
 
-          xrSession.requestReferenceSpace("local").then((refSpace) => {
+        //   xrSession.requestReferenceSpace('viewer').then((refSpace) => {
+        // //    this.xrReferenceSpace = refSpace.getOffsetReferenceSpace(
+        // //        new XRRigidTransform(vec3.fromValues(...this.camera.pos), vec3.fromValues(0,0,0)),
+        // //      );
+        //    // this.xrReferenceSpace = refSpace;
+        //    Controllers.refSpace = refSpace;//this.xrReferenceSpace;
+        //    animationFrameRequestID = xrSession.requestAnimationFrame(renderControllers.bind(this));
+        //   });
+
+          xrSession.requestReferenceSpace('local').then((refSpace) => {
             this.xrReferenceSpace = refSpace.getOffsetReferenceSpace(
-              new XRRigidTransform(vec3.fromValues(...this.camera.pos), vec3.create()),
+              new XRRigidTransform(vec3.fromValues(...this.camera.pos), vec3.fromValues(0,0,0)),
             );
+            Controllers.refSpace = refSpace;
             animationFrameRequestID = xrSession.requestAnimationFrame(render.bind(this));
           });
 
         //requestAnimationFrame(render);
-
+          
         // Draw the scene repeatedly
         function render(now, frame) {
+            this.frame = frame;
             const gl = this.renderEngine.gl;
             const session = frame.session;
             let adjustedRefSpace = this.camera.applyViewerControls(this.xrReferenceSpace);
             animationFrameRequestID = session.requestAnimationFrame(render.bind(this));
-            let pose = frame.getViewerPose(adjustedRefSpace);
+           let pose = frame.getViewerPose(adjustedRefSpace);
+        //    let pose = frame.getViewerPose(this.xrReferenceSpace);
             now *= 0.001; // convert to seconds
             //console.log("ANIMATION FRAME REQUESTED. TIME TAKEN: ", Date.now() - current);
             //console.log("NEW RENDER CYCLE AT ", now);
+          //  console.log(xrSession.inputSources);
+           //session.requestReferenceSpace("local").then((refSpace) => Controllers.updateControllers(frame, refSpace));
+            //Controllers.updateControllers(frame, adjustedRefSpace);
+          Controllers.updateControllers(frame, this.xrReferenceSpace);
+            //Controllers.updateCtrllrs(frame);
+        //console.log(xrSession);
+        //const inputSources = xrSession.inputSources;
+          
+    //i = false;
 
             const glLayer = session.renderState.baseLayer;
 
@@ -148,6 +184,7 @@ export class AppEngine {
             //gl.enable(gl.CULL_FACE);
             //gl.disable(gl.BLEND);
             //gl.depthMask(true);
+            //console.log(frame);
         
             // Clear the canvas before we start drawing on it.
         
@@ -161,8 +198,9 @@ export class AppEngine {
                 gl.canvas.width = viewport.width * pose.views.length;
                 gl.canvas.height = viewport.height;
                 //renderScene(gl, view, programInfo, buffers, texture, deltaTime);
-                
+
                 renderEngine.renderShaders(view, geometryControllers);
+
               }
            // renderEngine.renderShaders(camera, geometryControllers);
             //console.log("  RENDERING FINISHED. TIME TAKEN: ", Date.now() - cur);
@@ -172,9 +210,84 @@ export class AppEngine {
             current = Date.now();
             //session.requestAnimationFrame(render);
         }
+
+        // function renderControllers(now, frame) {
+        //     this.frame = frame;
+        //     const gl = this.renderEngine.gl;
+        //     const session = frame.session;
+        //     let adjustedRefSpace = this.camera.applyViewerControls(this.xrReferenceSpace);
+        //     animationFrameRequestID = session.requestAnimationFrame(render.bind(this));
+        //    let pose = frame.getViewerPose(adjustedRefSpace);
+        // //    let pose = frame.getViewerPose(this.xrReferenceSpace);
+        //     now *= 0.001; // convert to seconds
+        //     //console.log("ANIMATION FRAME REQUESTED. TIME TAKEN: ", Date.now() - current);
+        //     //console.log("NEW RENDER CYCLE AT ", now);
+        //   //  console.log(xrSession.inputSources);
+        //    //session.requestReferenceSpace("local").then((refSpace) => Controllers.updateControllers(frame, refSpace));
+        //     //Controllers.updateControllers(frame, adjustedRefSpace);
+        //   Controllers.updateControllers(frame, this.xrReferenceSpace);
+        //     //Controllers.updateCtrllrs(frame);
+        // //console.log(xrSession);
+        // //const inputSources = xrSession.inputSources;
+          
+        // //i = false;
+        
+        //     const glLayer = session.renderState.baseLayer;
+        
+        //     gl.bindFramebuffer(gl.FRAMEBUFFER, glLayer.framebuffer);
+        //     LogGLError("bindFrameBuffer", gl);
+            
+        //     let deltaTime = now - then;
+        //     //console.log("PREVIOUS CYCLE TOOK ", deltaTime);
+        //     then = now;
+        
+        //     //console.log("  UPDATING TIME COMPONENTS");
+        //     let curr = Date.now();
+        //     //console.log(deltaTime);
+        //     //for (const [_, geometryCtrllerList] of Object.entries(geometryControllers)) {
+        //     //    geometryCtrllerList.forEach(geometryController => {geometryController.updateTimeDependentComponents(now, deltaTime)});
+        //     // }
+        //     //console.log("  UPDATING TIME COMPONENTS FINISHED. TIME TAKEN: ", Date.now() - curr);
+            
+        //     //gl.clearColor(0.0, 0.0, 0.0, 1.0); // Clear to black, fully opaque
+        //     //gl.clearDepth(1.0); // Clear everything
+        //     //gl.enable(gl.DEPTH_TEST); // Enable depth testing
+        //     //gl.depthFunc(gl.LEQUAL); // Near things obscure far things
+        //     //LogGLError("glClear", gl);
+        //     //gl.enable(gl.CULL_FACE);
+        //     //gl.disable(gl.BLEND);
+        //     //gl.depthMask(true);
+        //     //console.log(frame);
+        
+        //     // Clear the canvas before we start drawing on it.
+        
+        //     //gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        //     let cur = Date.now();
+        //     //console.log("  NOW RENDERING SHADERS... ");
+        //     for (const view of pose.views) {
+        //         const viewport = glLayer.getViewport(view);
+        //         gl.viewport(viewport.x, viewport.y, viewport.width, viewport.height);
+        //         LogGLError(`Setting viewport for eye: ${view.eye}`, gl);
+        //         gl.canvas.width = viewport.width * pose.views.length;
+        //         gl.canvas.height = viewport.height;
+        //         //renderScene(gl, view, programInfo, buffers, texture, deltaTime);
+        
+        //         renderEngine.renderShaders(view, controllerGeometryControllers);
+        
+        //       }
+        //    // renderEngine.renderShaders(camera, geometryControllers);
+        //     //console.log("  RENDERING FINISHED. TIME TAKEN: ", Date.now() - cur);
+        
+        //     //console.log("REQUESTING NEW ANIMATION FRAME... ", Date.now());
+        //     //console.log("\n");
+        //     current = Date.now();
+        //     //session.requestAnimationFrame(render);
+        // }
         
     }
 }
+
+
 
 function LogGLError(where, gl) {
     let err = gl.getError();
@@ -182,3 +295,5 @@ function LogGLError(where, gl) {
       console.error(`WebGL error returned by ${where}: ${err}`);
     }
   }
+
+  
