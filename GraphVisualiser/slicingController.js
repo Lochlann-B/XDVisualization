@@ -37,12 +37,12 @@ export class SlicingController {
               case keyInc:
                 this.sliceVal -= 0.1;
                 this.slicedFn = partiallyApplyByIndex(fn, [this.idx], [this.sliceVal]);
-                //this.graphGeomCtrller.arrays = tessellate(this.slicedFn, graphGeomCtrller.xSamples, graphGeomCtrller.ySamples, graphGeomCtrller.zSamples);
+
                 break;
               case keyDec:
                 this.sliceVal += 0.1;
                 this.slicedFn = partiallyApplyByIndex(fn, [this.idx], [this.sliceVal]);
-                //this.graphGeomCtrller.arrays = tessellate(this.slicedFn, graphGeomCtrller.xSamples, graphGeomCtrller.ySamples, graphGeomCtrller.zSamples);
+    
                 break;
             }}
             

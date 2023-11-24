@@ -45,11 +45,6 @@ async function tessellate(fn, xSamples, ySamples, zSamples) {
 
             zMax = triangles.reduce((zm, v) => {if(v[2] != "Infinity" && v[2] > zm) {return v[2];} return zm;}, zMax);
             zMin = triangles.reduce((zm, v) => {if(v[2] != "Infinity" && v[2] < zm) {return v[2];} return zm;}, zMin);
-            //positions = positions.concat(triangles.flat());
-            // Add texture coordinates for each corner of the quad formed by the 2 triangles
-            //texCoords = texCoords.concat([0.0,0.0,1.0,0.0,0.0,1.0,1.0,1.0]);
-            //texCoords = texCoords.concat([0.0,0.0,1.0,1.0,1.0]);
-            //texCoords = texCoords.concat([x0/xInc,y0/yInc,x1/xInc,y0/yInc,x1/xInc,y1/yInc,x0/xInc,y1/yInc]);
 
             // First, check if any position in the triangle is undefined
             // if so, can't form a triangle - render the other points (if any) as singular points

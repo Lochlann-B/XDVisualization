@@ -57,13 +57,10 @@ export class InfoCollator {
     }
 
     updateBillBoard(key) {
-        //let pos = [this.position[0], this.position[1]-this.indexes[key]*0.025, this.position[2]];
         let pos = mat4.getTranslation(vec3.create(), this.modelMats[key]);
         let compVal = this.components[key];
         let str = typeof(compVal) == "number" ? this.components[key].toPrecision(3).toString() : typeof(compVal) == "object" ? compVal = compVal.map(val => val.toPrecision(3).toString()) : compVal;
         this.billBoards[key].genBillBoard(this.font, this.labels[key]+str, pos);
-        //let modelMat = mat4.translate(mat4.create(), mat4.create(), pos);
-        //(Object.keys(this.billBoards).map(key => this.billBoards[key]).reduce((acc, geo) => acc.concat(geo), []), mat4.translate(mat4.create(), mat4.create(), vec3.fromValues(...this.position)))
         this.superGeometryController.updateSuperTextGeometryController(Object.keys(this.billBoards).map(key => this.billBoards[key]).reduce((acc, geo) => {return acc.concat(geo);}, []), mat4.translate(mat4.create(), mat4.create(), vec3.fromValues(...this.position)));
     }
 

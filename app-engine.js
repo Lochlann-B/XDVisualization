@@ -63,7 +63,7 @@ export class AppEngine {
         axisDivs.updateAxis("Y", yRange);
         axisDivs.updateAxis("Z", zRange);
 
-        txtCtrller.genBillBoard(font, ".ab c . Oscar SMELLY BOY!!!.", [0,0,0]);
+        txtCtrller.genBillBoard(font, " ", [0,0,0]);
         this.geometryControllers.billboard.push(new TextBillBoardCollectionController(txtCtrller));
 
         axesCtrller.divLabelsController = axisDivs;

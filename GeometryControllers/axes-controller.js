@@ -75,9 +75,6 @@ export class AxesGeometryController extends GeometryController {
             }
         }
 
-        // Draw little arrows at the end of each axis
-        // TODO (low priority)
-
         // Colours
         let colours = [];
         for (let i=0; i < lines.length/3; i++) {
@@ -94,7 +91,6 @@ export class AxesGeometryController extends GeometryController {
     }
 
     updateRanges(ranges) {
-        //let axisLabel = ["X","Y","Z"];
         ranges.forEach((range, idx) => {let axis = [0,0,0]; axis[idx] = 1; this.update(axis, range);});
         this.divLabelsController.updateAxes(ranges);
         this.divLabelsController.updateSuperTextGeometryController();
@@ -103,7 +99,6 @@ export class AxesGeometryController extends GeometryController {
     updateTimeDependentComponents(time, deltaTime) {
         let rotY = mat4.create();
         mat4.fromRotation(rotY, deltaTime, vec3.fromValues(0,1,0));
-        //mat4.rotateY(this.modelMatrix, this.modelMatrix, deltaTime);
         mat4.mul(this.modelMatrix, this.modelMatrix, rotY);
     }
 

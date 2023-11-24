@@ -57,11 +57,10 @@ export class TextGeometryController extends GeometryController {
     }
 
     gen2DGeomAndTexturesFromString(fontAtlas, s) {
-        // TODO: move
         let scale = 0.0005;
 
         let vertexCount = s.length*4;
-        //let vertexCount = s.length*6;
+     
         let indexCount = s.length*6;
         let positions = new Array(vertexCount*2);
         let texCoords = new Array(vertexCount*2);
@@ -94,7 +93,7 @@ export class TextGeometryController extends GeometryController {
             indices = indices.concat([idx+1, idx+3, idx+4, idx+4, idx+2, idx+1]);
             idx += 4;
 
-            x += fontCharInfo.width; //+ fontCharInfo.spacing;
+            x += fontCharInfo.width;
             if (char === " ") {
                 x += fontCharInfo.spacing;
             }
@@ -104,25 +103,12 @@ export class TextGeometryController extends GeometryController {
     }
 
     genBillBoard(fontAtlas, string, pos) {
-        //let positions = [];
         let arrays = this.gen2DGeomAndTexturesFromString(fontAtlas, string);
         let maxX = 0;
         let maxY = 0;
-        // for (let i = 0; i < arrays.positions.length/2; i += 2) {
-        //     maxX = Math.max(maxX, arrays.positions[i]);
-        //     maxY = Math.max(maxY, arrays.positions[i+1]);
-        // }
-        // arrays.positions.map((pos, idx) => idx%2 ? pos-maxY/2 : pos-maxX/2);
-        //for(let i = 0; i < arrays.positions.length/2; i++) {
-        //    positions = positions.concat(pos);
-        //}
 
         let modelMatrix = mat4.create();
 
-        // mat4.translate(
-        //     modelMatrix,
-        //     modelMatrix,
-        //     vec4.transformMat4(vec4.create(), vec4.fromValues(pos[0], pos[1], pos[2], 1.0), this.modelMatrix));
          mat4.translate(
             modelMatrix,
             modelMatrix,

@@ -99,7 +99,6 @@ export class PointShader extends Shader {
             return;
         }
 
-        // TODO: Move getting the buffer data to another function
         const modelMatrix = geometryInfo.modelMatrix;
 
         const modelViewMatrix = mat4.create();
@@ -109,15 +108,6 @@ export class PointShader extends Shader {
           // buffer into the vertexPosition attribute.
           setPositionAttribute(gl, loadedBuffers.position, this.programInfo.attribLocations.vertexPosition);
         
-        //   // Tell WebGL to use our program when drawing
-        //   gl.useProgram(this.programInfo.program);
-
-        //   // Set the shader uniforms
-        // gl.uniformMatrix4fv(
-        //     this.programInfo.uniformLocations.projectionMatrix,
-        //     false,
-        //     projectionMatrix,
-        // );
         gl.uniformMatrix4fv(
             this.programInfo.uniformLocations.modelViewMatrix,
             false,
@@ -128,7 +118,6 @@ export class PointShader extends Shader {
             const vertexCount = geometryInfo.arrays.singularPositions.length;
             const offset = 0;
             gl.drawArrays(gl.POINTS, offset, vertexCount);
-            //gl.drawArrays(gl.TRIANGLES,offset,vertexCount);
         }    
     }
 }

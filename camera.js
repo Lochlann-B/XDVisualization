@@ -71,11 +71,9 @@ export class Camera {
                 break;
               case "i":
                 this.angle.X -= 0.1;
-                //this.angle.X = Math.max(-Math.PI/2, this.angle.X);
                 break;
               case "k":
                 this.angle.X += 0.1;
-                //this.angle.X = Math.min(Math.PI, this.angle.X);
                 break;
             }
           });

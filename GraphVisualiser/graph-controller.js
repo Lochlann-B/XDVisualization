@@ -30,10 +30,6 @@ export class GraphController extends GeometryController {
     }
 
     getGraphGeometryInfo() {
-
-        // TODO: Parameterize function, ranges, slices according to UI inputs
-        // TODO: Have a function which takes inputs from camera information to determine suitable sample size
-        //       to feed to tessellator.
     
         return {arrays: this.arrays, modelMatrix: this.modelMatrix};
     }

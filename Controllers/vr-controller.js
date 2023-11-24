@@ -142,11 +142,10 @@ export class VrController {
             let axesRotation = quat.create();
             this.decompose(this.axesModelMatrix, [0,0,0], axesRotation, [0,0,0]);
 
-            const rotationQuaternion = axesRotation; // Replace with your quaternion representing the rotation
-            const vectorToRotate = deltaXYZ; // Replace with the vector you want to rotate
+            const rotationQuaternion = axesRotation; 
+            const vectorToRotate = deltaXYZ;
             
             // Normalize the quaternion (if needed)
-            //quat.normalize(rotationQuaternion, rotationQuaternion);
             
             // Create a quaternion representing the vector
             const vectorQuaternion = quat.create();
@@ -197,48 +196,43 @@ export class VrController {
     }
 
     // Reimplementation of decompose because glmatrix's getRotation is broken >:(
-    decompose(
-        srcMat,
-        dstTranslation,
-        dstRotation,
-        dstScale) {
-    let sx = vec3.length([srcMat[0], srcMat[1], srcMat[2]]);
-    const sy = vec3.length([srcMat[4], srcMat[5], srcMat[6]]);
-    const sz = vec3.length([srcMat[8], srcMat[9], srcMat[10]]);
+    decompose(srcMat,dstTranslation,dstRotation,dstScale) {
 
-    // if determine is negative, we need to invert one scale
-    const det = mat4.determinant(srcMat);
-    if (det < 0) sx = - sx;
+        let sx = vec3.length([srcMat[0], srcMat[1], srcMat[2]]);
+        const sy = vec3.length([srcMat[4], srcMat[5], srcMat[6]]);
+        const sz = vec3.length([srcMat[8], srcMat[9], srcMat[10]]);
 
-    dstTranslation[0] = srcMat[12];
-    dstTranslation[1] = srcMat[13];
-    dstTranslation[2] = srcMat[14];
+        const det = mat4.determinant(srcMat);
+        if (det < 0) sx = - sx;
 
-    // scale the rotation part
-    const _m1 = srcMat.slice();
+        dstTranslation[0] = srcMat[12];
+        dstTranslation[1] = srcMat[13];
+        dstTranslation[2] = srcMat[14];
 
-    const invSX = 1 / sx;
-    const invSY = 1 / sy;
-    const invSZ = 1 / sz;
+        const m1 = srcMat.slice();
 
-    _m1[0] *= invSX;
-    _m1[1] *= invSX;
-    _m1[2] *= invSX;
+        const invSX = 1 / sx;
+        const invSY = 1 / sy;
+        const invSZ = 1 / sz;
 
-    _m1[4] *= invSY;
-    _m1[5] *= invSY;
-    _m1[6] *= invSY;
+        m1[0] *= invSX;
+        m1[1] *= invSX;
+        m1[2] *= invSX;
 
-    _m1[8] *= invSZ;
-    _m1[9] *= invSZ;
-    _m1[10] *= invSZ;
+        m1[4] *= invSY;
+        m1[5] *= invSY;
+        m1[6] *= invSY;
 
-    mat4.getRotation(dstRotation, _m1);
+        m1[8] *= invSZ;
+        m1[9] *= invSZ;
+        m1[10] *= invSZ;
 
-    dstScale[0] = sx;
-    dstScale[1] = sy;
-    dstScale[2] = sz;
-}
+        mat4.getRotation(dstRotation, _m1);
+
+        dstScale[0] = sx;
+        dstScale[1] = sy;
+        dstScale[2] = sz;
+    }
 
 }
 

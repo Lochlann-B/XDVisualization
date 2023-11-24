@@ -5,7 +5,6 @@ import { BillBoardShader } from "./Shaders/billboard-shaders.js";
 
 export class RenderEngine {
     canvas = undefined; 
-    // Initialize the GL context
     gl = undefined;
     xrSession = undefined;
 
@@ -25,9 +24,9 @@ export class RenderEngine {
             return;
         }
 
-        // Set clear color to black, fully opaque
+        
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
-        // Clear the color buffer with specified clear color
+        
         gl.clear(gl.COLOR_BUFFER_BIT);
 
         // initialise individual shaders
@@ -49,14 +48,11 @@ export class RenderEngine {
     renderShaders(view, geometryControllers) {
         const gl = this.gl;
 
-        // TODO: move this gl stuff over to glctxcontroller
-        //gl.clearColor(0.0, 0.0, 0.0, 1.0); // Clear to black, fully opaque
-        gl.clearDepth(1.0); // Clear everything
-        gl.enable(gl.DEPTH_TEST); // Enable depth testing
-        gl.depthFunc(gl.LEQUAL); // Near things obscure far things
-        //gl.enable(gl.CULL_FACE);
-        //gl.disable(gl.BLEND);
-        //gl.depthMask(true);
+   
+        gl.clearDepth(1.0); 
+        gl.enable(gl.DEPTH_TEST); 
+        gl.depthFunc(gl.LEQUAL); 
+ 
     
         // Clear the canvas before we start drawing on it.
     
@@ -71,14 +67,9 @@ export class RenderEngine {
         */
        const projectionMatrix = view.projectionMatrix;
     
-        // note: glmatrix.js always has the first argument
-        // as the destination to receive the result.
-        //mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
-
-        //const viewMatrix = mat4.create();
         const viewMatrix = view.transform.inverse.matrix;
-        //mat4.scale(viewMatrix, viewMatrix, vec3.fromValues(5.0, 5.0, 5.0));
-
+      
+        // Camera transform - this is no longer needed with VR, but keeping it here in case you want to test it in non-VR in the future
         /*
         // Create rotation matrices for each axis
         let rotationMatrixX = mat4.create();
@@ -109,10 +100,7 @@ export class RenderEngine {
                 shader.render(gl, projectionMatrix, viewMatrix, geometryInfo, loadedBuffer);
             }
         }
-        //for (let geoCtrl of geometryControllers.billboard) {
-        //    const loadedBuffer = this.shaderList.billboard.getAndLoadBuffers(gl, geoCtrl);
-        //    this.shaderList.billboard.render(gl, projectionMatrix, viewMatrix, geoCtrl, loadedBuffer);
-        //}
+
         gl.flush();
     }
 }

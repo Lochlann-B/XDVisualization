@@ -47,17 +47,12 @@ void main(void) {
 export class BillBoardShader extends Shader {
 
     programInfo = undefined;
-    texture = undefined; // TODO: Move to different class? want to parameterize textures between geometry
-    // TODO: Be able to switch between colour and texture
+    texture = undefined; 
 
     initShader(gl) {
-       // Initialize a shader program; this is where all the lighting
-        // for the vertices and so forth is established.
+
         const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
 
-        // Collect all the info needed to use the shader program.
-        // Look up which attribute our shader program is using
-        // for aVertexPosition and look up uniform locations.
         this.programInfo = {
             program: shaderProgram,
             attribLocations: {
@@ -69,19 +64,19 @@ export class BillBoardShader extends Shader {
                 projectionMatrix: gl.getUniformLocation(shaderProgram, "uProjectionMatrix"),
                 viewMatrix: gl.getUniformLocation(shaderProgram, "uViewMatrix"),
                 uSampler: gl.getUniformLocation(shaderProgram, "uSampler"),
-                //uWorldCamera: gl.getUniformLocation(shaderProgram, "uWorldCamera"),
             },
         };
 
         this.texture = getTexture(gl, "Arial");
     }
 
-    // TODO: CHANGE
+
     getAndLoadBuffers(gl, textGeometryController) {
         const arrays = textGeometryController.arrays;
-        //let worldPos = vec3.create();
+      
+        // extract out the translation vector in the model matrix, transform it for e.g. scaling, and pass vector to shaders
         let worldPoses = textGeometryController.modelMatrices.map(modelMat => {let pModelMat = mat4.create(); mat4.mul(pModelMat, textGeometryController.parentModelMatrix, modelMat); let tVec = vec3.create(); mat4.getTranslation(tVec, modelMat); let tVect4 = vec4.fromValues(tVec[0], tVec[1], tVec[2], 1.0); vec4.transformMat4(tVect4, tVect4, textGeometryController.parentModelMatrix); return tVect4}).reduce((acc, cur) => acc.concat([cur[0], cur[1], cur[2]]), []);
-        //let worldPoses = textGeometryController.modelMatrices.map(modelMat => {let tVec = vec3.create(); mat4.getTranslation(tVec, modelMat); return tVec}).reduce((acc, cur) => acc.concat([cur[0], cur[1], cur[2]]), []);
+        
         const positionBuffer = initPositionBuffer(gl, arrays.positions);
         const locationBuffer = initPositionBuffer(gl, worldPoses);
         const textureCoordBuffer = initTextureBuffer(gl, arrays.textureCoords);
@@ -115,11 +110,7 @@ export class BillBoardShader extends Shader {
       false,
       viewMatrix,
       );
-      
-      //gl.uniform3fv(
-      //    this.programInfo.uniformLocations.uWorldCamera,
-       //   geometryInfo.camera.pos,
-      //);
+    
   
       // Tell WebGL we want to affect texture unit 1
       gl.activeTexture(gl.TEXTURE1);
@@ -132,89 +123,13 @@ export class BillBoardShader extends Shader {
     }
 
     render(gl, projectionMatrix, viewMatrix, geometryInfo, loadedBuffers) {
-        // TODO: Move getting the buffer data to another function
 
-        //mat4.targetTo(modelMatrix, [0,0,0], geometryInfo.camera.pos, [0,1,0]);
-        /*
-        let modelMatrix = geometryInfo.modelMatrix;
-        let modelViewMatrix = mat4.create();
-        let cam = geometryInfo.camera;
-        let theta = Math.atan((cam.pos[1]-modelMatrix[14])/(cam.pos[0]-modelMatrix[12]));
-        let phi = Math.atan((cam.pos[2]-modelMatrix[13])/((cam.pos[0]-modelMatrix[12])**2 + (cam.pos[1]-modelMatrix[14])**2));
-
-        let rotateX = mat4.create();
-        let rotateY = mat4.create();
-        let rotateZ = mat4.create();
-
-        mat4.fromXRotation(rotateX, 0);
-        mat4.fromYRotation(rotateY, phi);
-        mat4.fromZRotation(rotateZ, theta);
-
-        mat4.multiply(modelViewMatrix, rotateZ, rotateY);
-        mat4.multiply(modelViewMatrix, modelViewMatrix, rotateX);
-        mat4.multiply(modelViewMatrix, modelViewMatrix, modelMatrix);
-
-        mat4.mul(modelViewMatrix, viewMatrix, modelMatrix);
-        */
-       //let modelMatrix = geometryInfo.modelMatrix;
-    //    let worldPos = vec3.create();
-    //    mat4.getTranslation(worldPos, modelMatrix);//[modelMatrix[12],modelMatrix[13],modelMatrix[14],1.0];
-       //let viewPos = vec4.fromValues(worldPos[0], worldPos[1], worldPos[2], 1.0);
-       //vec4.transformMat4(viewPos, viewPos, viewMatrix);
-
-       //let uProjectMat = mat4.create();
-       //mat4.translate(uProjectMat, projectionMatrix, vec3.fromValues(viewPos[0], viewPos[1], viewPos[2]));
-
-       // AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-    //    gl.enable(gl.BLEND);
-    //     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-    //     gl.depthMask(false);
-    //     gl.disable(gl.DEPTH_TEST);
-
-    //    gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
-    //     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    //     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    //     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    //     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-
-        // Tell WebGL how to pull out the positions from the position
-        // buffer into the vertexPosition attribute.
         setTextPositionAttribute(gl, loadedBuffers.position, this.programInfo.attribLocations.vertexPosition);
         setTextureAttribute(gl, loadedBuffers.texture, this.programInfo.attribLocations.textureCoord);
         setPositionAttribute(gl, loadedBuffers.location, this.programInfo.attribLocations.vertexLocation);
     
-        // Tell WebGL which indices to use to index the vertices
+        
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, loadedBuffers.indices);
-        
-        // // Tell WebGL to use our program when drawing
-        // gl.useProgram(this.programInfo.program);
-        
-
-    //      // Set the shader uniforms
-    //   gl.uniformMatrix4fv(
-    //       this.programInfo.uniformLocations.projectionMatrix,
-    //       false,
-    //       projectionMatrix,
-    //   );
-    //   gl.uniformMatrix4fv(
-    //     this.programInfo.uniformLocations.viewMatrix,
-    //     false,
-    //     viewMatrix,
-    //     );
-        
-    //     //gl.uniform3fv(
-    //     //    this.programInfo.uniformLocations.uWorldCamera,
-    //      //   geometryInfo.camera.pos,
-    //     //);
-    
-    //     // Tell WebGL we want to affect texture unit 1
-    //     gl.activeTexture(gl.TEXTURE1);
-    
-    //     // Bind the texture to texture unit 1
-    //     gl.bindTexture(gl.TEXTURE_2D, this.texture);
-    
-    //     // Tell the shader we bound the texture to texture unit 1
-    //     gl.uniform1i(this.programInfo.uniformLocations.uSampler, 1);
         
         
     

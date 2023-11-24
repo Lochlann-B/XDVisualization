@@ -31,13 +31,9 @@ export class LineShader extends Shader {
     programInfo = undefined;
 
     initShader(gl) {
-       // Initialize a shader program; this is where all the lighting
-        // for the vertices and so forth is established.
+
         const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
 
-        // Collect all the info needed to use the shader program.
-        // Look up which attribute our shader program is using
-        // for aVertexPosition and look up uniform locations.
         this.programInfo = {
             program: shaderProgram,
             attribLocations: {
@@ -80,44 +76,25 @@ export class LineShader extends Shader {
      }
 
     render(gl, projectionMatrix, viewMatrix, geometryInfo, loadedBuffers) {
-        // TODO: Move getting the buffer data to another function
         const modelMatrix = geometryInfo.modelMatrix;
 
         const modelViewMatrix = mat4.create();
         mat4.mul(modelViewMatrix, viewMatrix, modelMatrix);
         
-          // Tell WebGL how to pull out the positions from the position
-          // buffer into the vertexPosition attribute.
+          
           setPositionAttribute(gl, loadedBuffers.position, this.programInfo.attribLocations.vertexPosition);
           setColorAttribute(gl, loadedBuffers.colour, this.programInfo.attribLocations.colour);
         
-          //gl.enable(gl.BLEND);
-          //gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-        //   gl.depthMask(false);
-        //   gl.disable(gl.DEPTH_TEST);
-
-        //   // Tell WebGL to use our program when drawing
-        //   gl.useProgram(this.programInfo.program);
-
-        //   // Set the shader uniforms
-        // gl.uniformMatrix4fv(
-        //     this.programInfo.uniformLocations.projectionMatrix,
-        //     false,
-        //     projectionMatrix,
-        // );
         gl.uniformMatrix4fv(
             this.programInfo.uniformLocations.modelViewMatrix,
             false,
             modelViewMatrix,
         );
-
-        // gl.lineWidth(10.0);
     
         {
             const vertexCount = geometryInfo.arrays.positions.length/3;
             const offset = 0;
             gl.drawArrays(gl.LINES, offset, vertexCount);
-            //gl.drawArrays(gl.TRIANGLES,offset,vertexCount);
         }    
     }
 }
