@@ -29,7 +29,7 @@ export class TextGeometryController extends GeometryController {
 
                 let lower = ranges[j][0]+i*rRanges[j]/divs;
                 let upper = ranges[j][1]-i*rRanges[j]/divs;
-                console.log(lower.toFixed(2).toString());
+ 
                 let textLower = this.gen2DGeomAndTexturesFromString(fontAtlas, Math.round(lower).toString());
                 let textUpper = this.gen2DGeomAndTexturesFromString(fontAtlas, Math.round(upper).toString());
                 textLower.indices.map(idx => idx + idxOffset);
@@ -89,45 +89,9 @@ export class TextGeometryController extends GeometryController {
                     vtIdx += 2;
                 }
             }
-            
-
-            /*
-            positions[vtIdx] = scale*(x + 0*fontCharInfo.width);
-            positions[vtIdx+1] = scale*(0*fontCharInfo.height);
-            texCoords[vtIdx] = (fontCharInfo.x + 0*fontCharInfo.width)/(maxX);
-            texCoords[vtIdx+1] = (fontCharInfo.y + 0*fontCharInfo.height)/(maxY);
-            vtIdx += 2;
-
-            positions[vtIdx] = scale*(x + 1*fontCharInfo.width);
-            positions[vtIdx+1] = scale*(0*fontCharInfo.height);
-            texCoords[vtIdx] = (fontCharInfo.x + 1*fontCharInfo.width-1)/(maxX);
-            texCoords[vtIdx+1] = (fontCharInfo.y + 0*fontCharInfo.height)/(maxY);
-            vtIdx += 2;
-            positions[vtIdx] = scale*(x + 1*fontCharInfo.width);
-            positions[vtIdx+1] = scale*(1*fontCharInfo.height);
-            texCoords[vtIdx] = (fontCharInfo.x + 1*fontCharInfo.width-1)/(maxX);
-            texCoords[vtIdx+1] = (fontCharInfo.y + 1*fontCharInfo.height-1)/(maxY);
-            vtIdx += 2;
-            positions[vtIdx] = scale*(x + 1*fontCharInfo.width);
-            positions[vtIdx+1] = scale*(1*fontCharInfo.height);
-            texCoords[vtIdx] = (fontCharInfo.x + 1*fontCharInfo.width-1)/(maxX);
-            texCoords[vtIdx+1] = (fontCharInfo.y + 1*fontCharInfo.height-1)/(maxY);
-            vtIdx += 2;
-            positions[vtIdx] = scale*(x + 0*fontCharInfo.width);
-            positions[vtIdx+1] = scale*(1*fontCharInfo.height);
-            texCoords[vtIdx] = (fontCharInfo.x + 0*fontCharInfo.width)/(maxX);
-            texCoords[vtIdx+1] = (fontCharInfo.y + 1*fontCharInfo.height-1)/(maxY);
-            vtIdx += 2;
-            positions[vtIdx] = scale*(x + 0*fontCharInfo.width);
-            positions[vtIdx+1] = scale*(0*fontCharInfo.height);
-            texCoords[vtIdx] = (fontCharInfo.x + 0*fontCharInfo.width)/(maxX);
-            texCoords[vtIdx+1] = (fontCharInfo.y + 0*fontCharInfo.height)/(maxY);
-            vtIdx += 2;
-            */
 
             // Add 6 vertices to index array
             indices = indices.concat([idx+1, idx+3, idx+4, idx+4, idx+2, idx+1]);
-            //indices = indices.concat([idx+1, idx+3, idx+2, idx+4, idx+4, idx+1]);
             idx += 4;
 
             x += fontCharInfo.width; //+ fontCharInfo.spacing;

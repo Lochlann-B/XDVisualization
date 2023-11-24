@@ -63,20 +63,18 @@ export class AxesDivLabelsController extends GeometryController {
             let upperPosCoord = ranges[1]-i*rRange/10;
 
             let txtGeomCtrllerL = new TextGeometryController();
-            //txtGeomCtrllerL.modelMatrix = this.modelMatrix;
+          
             txtGeomCtrllerL.camera = this.camera;
             coordAxis[activeAxis] = lowerPosCoord+ offsetL + offsetU;
-            //let vec4LCoords = vec4.fromValues(...coordAxis, 0.0);
-            //vec4.transformMat4(vec4LCoords, vec4LCoords, this.modelMatrix);
-            txtGeomCtrllerL.genBillBoard(this.font, lowerPosCoord.toPrecision(3).toString(), coordAxis);//[vec4LCoords[0], vec4LCoords[1], vec4LCoords[2]]);
+ 
+            txtGeomCtrllerL.genBillBoard(this.font, lowerPosCoord.toPrecision(3).toString(), coordAxis);
 
             let txtGeomCtrllerU = new TextGeometryController();
-            //txtGeomCtrllerU.modelMatrix = this.modelMatrix;
+ 
             coordAxis[activeAxis] = upperPosCoord+ offsetL + offsetU;
             txtGeomCtrllerU.camera = this.camera;
-            //let vec4UCoords = vec4.fromValues(...coordAxis, 0.0);
-            //vec4.transformMat4(vec4UCoords, vec4UCoords, this.modelMatrix);
-            txtGeomCtrllerU.genBillBoard(this.font, upperPosCoord.toPrecision(3).toString(), coordAxis);//[vec4UCoords[0], vec4UCoords[1], vec4UCoords[2]]);
+
+            txtGeomCtrllerU.genBillBoard(this.font, upperPosCoord.toPrecision(3).toString(), coordAxis);
             
 
             newAxis = newAxis.concat([txtGeomCtrllerL, txtGeomCtrllerU]);
@@ -97,6 +95,5 @@ export class AxesDivLabelsController extends GeometryController {
         this.superTextGeometryController.arrays.textureCoords = flattenedGeometryControllerList.reduce((res, geoCtrl) => res = res.concat(geoCtrl.arrays.textureCoords), []);
         this.superTextGeometryController.arrays.indices = flattenedGeometryControllerList.reduce((res, geoCtrl) => {return {list: res.list.concat(geoCtrl.arrays.indices.map(idx => idx += res.offset)), offset: res.offset + Math.max(...geoCtrl.arrays.indices)+1}}, {list: [], offset: 0},).list;
         this.superTextGeometryController.parentModelMatrix = this.modelMatrix;
-        //this.superTextGeometryController.parentModelMatrices = new Array(this.superTextGeometryController.modelMatrices.length).fill(mat4.create());
     }
 }

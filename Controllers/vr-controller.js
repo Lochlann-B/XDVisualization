@@ -40,8 +40,6 @@ export class VrController {
 
 
             });
-            //this.controllers.left = inputSourceList.length > 0 ? inputSourceList[0] : null;
-            //this.controllers.right = inputSourceList.length > 1 ? inputSourceList[1] : null;
     }
 
     constructor(xrsess, axesController, graphController, sliceController, infoCollator) {
@@ -53,7 +51,6 @@ export class VrController {
         this.sliceController = sliceController;
         this.infoCollator = infoCollator;
 
-       // this.updateInputSources({session: xrsess});
 
         this.xrSession.addEventListener("inputsourceschange", (event) => {
             this.updateInputSources(event);
@@ -66,7 +63,6 @@ export class VrController {
     }
 
     updateControllers(frame, refSpace) {
-            //const inputPose = xrSession.getInputPose(inputSource, xrSession.renderState.baseLayer);
             this.controllerGeometries[0].modelMatrix = frame.getPose(this.controllers.left.gripSpace, this.refSpace).transform.matrix;
             this.controllerGeometries[1].modelMatrix = frame.getPose(this.controllers.right.gripSpace, this.refSpace).transform.matrix;
             
@@ -74,8 +70,6 @@ export class VrController {
             this.checkGraphMoveButton();
             this.checkGraphZoomButton();
             this.checkSliceButton();
-            //console.log(frame.getPose(inputSource.gripSpace, this.xrReferenceSpace));
-            //console.log(inputSource);  
     }
 
     checkSliceButton() {
@@ -101,46 +95,6 @@ export class VrController {
             tessellate(this.sliceController.slicedFn, this.graphController.xSamples, this.graphController.ySamples, this.graphController.zSamples).then(res => this.graphController.arrays = res);
         }
     }
-
-    /*
-    checkSliceButton() {
-        let ranges = this.getRanges;
-        let sign = 1;
-        if(this.controllers.right.gamepad.buttons[0].pressed) {
-
-        }
-        if(this.controllers.left.gamepad.buttons[4].pressed) {
-            // X L
-            ranges[0][0] -= 0.05;
-            this.updateRanges(ranges);
-        }
-        if(this.controllers.left.gamepad.buttons[4].pressed) {
-            // X L
-            ranges[0][1] -= 0.05;
-            this.updateRanges(ranges);
-        }
-        if(this.controllers.left.gamepad.buttons[4].pressed) {
-            // X L
-            ranges[0][0] -= 0.05;
-            this.updateRanges(ranges);
-        }
-        if(this.controllers.left.gamepad.buttons[4].pressed) {
-            // X L
-            ranges[0][0] -= 0.05;
-            this.updateRanges(ranges);
-        }
-        if(this.controllers.left.gamepad.buttons[4].pressed) {
-            // X L
-            ranges[0][0] -= 0.05;
-            this.updateRanges(ranges);
-        }
-        if(this.controllers.left.gamepad.buttons[4].pressed) {
-            // X L
-            ranges[0][0] -= 0.05;
-            this.updateRanges(ranges);
-        }
-    }
-    */
 
     getRanges() {
         return [this.axesController.xRange, this.axesController.yRange, this.axesController.zRange];
@@ -169,9 +123,6 @@ export class VrController {
                 let ranges = [this.axesController.xRange, this.axesController.yRange, this.axesController.zRange];
                 let newRanges = ranges.map(range => range.map(bound => bound*0.9));
                 this.updateRanges(newRanges);
-                //this.graphController.updateRanges(newRanges);
-                //this.axesController.updateRanges(newRanges);
-                //this.axesDivLabelsController.updateAxes(newRanges);
             }
             this.prevZoomInButtonPressed = true;
         } else { this.prevZoomInButtonPressed = false; }
@@ -187,21 +138,10 @@ export class VrController {
             let prevMovement = vec3.fromValues(...this.initialMovement);
             this.initialMovement = mat4.getTranslation(vec3.create(), this.controllerGeometries[0].modelMatrix);
             let deltaXYZ = vec4.fromValues(10*(this.initialMovement[0]-prevMovement[0]), 10*(this.initialMovement[1]-prevMovement[1]), 10*(this.initialMovement[2]-prevMovement[2]), 1.0);
-            //let tDeltaXYZ = vec4.create();
-            //let axesRotation = mat4.getRotation(quat.create(), this.axesModelMatrix);
+
             let axesRotation = quat.create();
             this.decompose(this.axesModelMatrix, [0,0,0], axesRotation, [0,0,0]);
-            // let angleX = quat.getAxisAngle(vec3.fromValues(1,0,0), axesRotation);
-            // let angleY = quat.getAxisAngle(vec3.fromValues(0,1,0), axesRotation);
-            // let angleZ = quat.getAxisAngle(vec3.fromValues(0,0,1), axesRotation);
-            // let anglesToWorld = mat4.rotateZ(mat4.create(), mat4.rotateY(mat4.create(), mat4.fromXRotation(mat4.create(), angleX), angleY), angleZ);
-            // for (let i = 0; i < 3; i++) {
-            //     let axis = vec4.create();
-            //     axis[i] = 1;
-            //     vec4.scale(axis, axis, deltaXYZ[i]);
-            //     vec4.transformMat4(axis, axis, anglesToWorld);
-            //     vec4.add(tDeltaXYZ, tDeltaXYZ, axis);
-            // }
+
             const rotationQuaternion = axesRotation; // Replace with your quaternion representing the rotation
             const vectorToRotate = deltaXYZ; // Replace with the vector you want to rotate
             
@@ -227,13 +167,7 @@ export class VrController {
               rotatedVectorQuaternion[1],
               rotatedVectorQuaternion[2]
             );
-            
-            //let outAxis = vec3.create();
-            //let axis = quat.getAxisAngle(outAxis, axesRotation);
-            //let anglesToWorld = mat4.rotateZ(mat4.create(), mat4.rotateY(mat4.create(), mat4.fromXRotation(mat4.create(), -angleX), -angleY), -angleZ);
-            
-            //vec4.transformMat4(deltaXYZ, deltaXYZ, anglesToWorld);
-            //let axesTransformed = vec3.transformQuat(vec3.create(), deltaXYZ, quat.invert(quat.create(), axesRotation));
+
             mat4.translate(this.axesModelMatrix, this.axesModelMatrix, rotatedVector);
         }
         else {

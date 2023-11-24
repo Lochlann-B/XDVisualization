@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/Lochlann-B/XDVisualization/issues"
   },
-  "homepage": "https://github.com/Lochlann-B/XDVisualization#readme"
+  "homepage": "https://github.com/Lochlann-B/XDVisualization#readme",
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
 }

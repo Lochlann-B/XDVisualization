@@ -104,6 +104,8 @@ function bounded_fn(fn,x,y, zSamples) {
     return z;
 }
 
+function clamp(val, min, max) {return Math.min(Math.max(val, min), max)}
+
 function getOffsets(newRange) {
     let offsetL = 0;
     let offsetU = 0;

@@ -98,45 +98,7 @@ export class AxesGeometryController extends GeometryController {
         ranges.forEach((range, idx) => {let axis = [0,0,0]; axis[idx] = 1; this.update(axis, range);});
         this.divLabelsController.updateAxes(ranges);
         this.divLabelsController.updateSuperTextGeometryController();
-    }
-
-    /*
-    get arrays() {
-        const ranges = [this.xRange, this.yrange, this.zRange];
-        let lines = [];
-        // Set up X, Y, Z axes
-        lines = lines.concat([
-            this.xRange[0],0.0,0.0, this.xRange[1],0.0,0.0,
-            0.0,this.yrange[0],0.0, 0.0,this.yrange[1],0.0,
-            0.0,0.0,this.zRange[0], 0.0,0.0,this.zRange[1]]);
-
-        // Set up tenth divisions along each axis
-        const rRanges = ranges.map(range => range[1]-range[0]);
-        let divSz = (Math.min(...rRanges))/60;
-        for (let i = 0; i < 10; i++) {
-            // Don't put a line on x=y=z=0
-            
-            for (let j = 0; j < 3; j++) {
-                let axis = [0,0,0];
-                axis[j] = 1;
-                lines = lines.concat(
-                    this.getCross(axis, ranges[j][0]+i*rRanges[j]/10, divSz)).concat(
-                    this.getCross(axis, ranges[j][1]-i*rRanges[j]/10, divSz));
-            }
-        }
-
-        // Draw little arrows at the end of each axis
-        // TODO (low priority)
-
-        // Colours
-        let colours = [];
-        for (let i=0; i < lines.length/3; i++) {
-            colours = colours.concat([1.0,1.0,0.0,1.0]);
-        }
-
-        return {positions: lines, colours: colours};
-    }   
-    */ 
+    } 
 
     updateTimeDependentComponents(time, deltaTime) {
         let rotY = mat4.create();

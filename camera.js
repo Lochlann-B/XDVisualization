@@ -29,16 +29,6 @@ export class Camera {
           w: this.inverseOrientation[3],
         },
       );
-      
-      // let newTransform = new XRRigidTransform(
-      //   { x: -this.pos[0], y: -this.pos[1], z: -this.pos[2]},
-      //   {
-      //     x: -this.angle.X,
-      //     y: -this.angle.Y,
-      //     z: -this.angle.Z,
-      //     w: 0.0,
-      //   },
-      // );
 
       return refSpace.getOffsetReferenceSpace(newTransform);
 
@@ -51,27 +41,27 @@ export class Camera {
             switch(event.key) {
               case "w":
                 axis[2] = 1;
-                this.move(-1, axis);
+                this.move(-0.1, axis);
                 break;
               case "a":
                 axis[0] = 1;
-                this.move(-1, axis);
+                this.move(-0.1, axis);
                 break;
               case "s":
                 axis[2] = 1;
-                this.move(1, axis);
+                this.move(0.1, axis);
                 break;
               case "d":
                 axis[0] = 1;
-                this.move(1, axis);
+                this.move(0.1, axis);
                 break;
               case "r":
                 axis[1] = 1;
-                this.move(1, axis);
+                this.move(0.1, axis);
                 break;
               case "f":
                 axis[1] = 1;
-                this.move(-1, axis);
+                this.move(-0.1, axis);
                 break;
               case "j":
                 this.angle.Y -= 0.1;

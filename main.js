@@ -47,9 +47,7 @@ function main() {
     
     appEngine = new AppEngine();
     appEngine.appInit();
-    
-    //navigator.xr.requestSession("immersive-vr").then(appEngine.appLoop.bind(appEngine));
-   // appEngine.appLoop();
+
 }
 
 main();
