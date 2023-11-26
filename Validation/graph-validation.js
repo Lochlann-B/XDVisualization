@@ -1,12 +1,7 @@
 
 
-// Function to find nearest vertices in the mesh for a given point
-function findNearestVertices(sampledPoint, meshVertices) {
-    // Implement logic to find closest vertices in the mesh to the sampled point
-    // Return indices or references to the nearest vertices
-    // You might use distance calculations (e.g., Euclidean distance) to find the closest vertices
-    // For simplicity, let's assume you have a function to calculate distances
 
+function findNearestVertices(sampledPoint, meshVertices) {
     // Initialize with two closest vertices (assuming a triangle mesh)
     let closestVertices = [];
     let smallestDistance = Infinity;
@@ -18,23 +13,29 @@ function findNearestVertices(sampledPoint, meshVertices) {
 
         // Calculate triangle area diff - if 0, then point inside triangle and triangle is necessarily nearest vertices
         const ADiff = getMinTriangleArea(sampledPoint, v0, v1, v2);
-
-        if(ADiff == 0) { return [v0, v1, v2]; }
+        
+        let epsilon = 1e-5;
+        if(ADiff < epsilon) { return [v0, v1, v2]; }
 
         let triangleCentre = [(v0[0] + v1[0] + v2[0])/3, (v0[1] + v1[1] + v2[1])/3];
-        let distToTriangleCentre = Math.hypot(triangleCentre[0]-sampledPoint[0], triangleCentre[1]-sampledPoint[1]);
+        let distToTriangleCentre = ADiff;   //Math.hypot(triangleCentre[0]-sampledPoint[0], triangleCentre[1]-sampledPoint[1]);
 
         if (distToTriangleCentre < smallestDistance) {
             closestVertices = [v0, v1, v2];
-            smallestDistance = distToTriangleCentre;
+            smallestDistance = ADiff;//distToTriangleCentre;
         }
     }
-
-    return closestVertices;
+    //console.log(sampledPoint, closestVertices, smallestDistance);
+    return null;
 }
 
 function getTriangleArea(x1,y1,x2,y2,x3,y3) {
-    return Math.abs((x1*(y3-y2) + x2*(y3-y1) + x3*(y1-y2))/2.0);
+    //return Math.abs((x1*(y3-y2) + x2*(y3-y1) + x3*(y1-y2))/2.0);
+    let a = Math.hypot(x2-x1, y2-y1);
+    let b = Math.hypot(x3-x2, y3-y2);
+    let c = Math.hypot(x3-x1, y3-y1);
+    let s = (a + b + c)/2;
+    return Math.sqrt(s*(s-a)*(s-b)*(s-c));
 }
 
 function getMinTriangleArea(vTest, v1, v2, v3) {
@@ -46,25 +47,11 @@ function getMinTriangleArea(vTest, v1, v2, v3) {
 
     let AP3 = getTriangleArea(v1[0],v1[1],v2[0],v2[1],vTest[0],vTest[1]);
 
-    return Math.abs(ATotal - (AP1 + AP2 + AP3));
+    return Math.abs((ATotal - (AP1 + AP2 + AP3)));//, 0);
 }
 
 // Function to perform interpolation and estimate z-value at the sampled point
 function interpolateZValue(sampledPoint, nearestVertices) {
-    // Implement interpolation logic (e.g., linear interpolation, barycentric coordinates)
-    // Use the nearest vertices and their properties (e.g., z-values) to estimate the z-value at the sampled point
-
-    // Perform linear interpolation using the z-values of nearest vertices
-
-    // Calculate weights for linear interpolation (e.g., using barycentric coordinates)
-    // This might involve determining the area weights or ratios based on distances
-
-    // Perform linear interpolation to estimate the z-value at the sampled point
-    // For simplicity, let's say the z-value is directly proportional to the distance from the nearest vertex
-    // const totalDistance = nearestVertices.reduce((res, v) => res + Math.hypot(v[0]-sampledPoint[0], v[1]-sampledPoint[1], v[2]-sampledPoint[2]), 0);
-    // const weights = nearestVertices.map(v =>
-    //     1 - Math.hypot(v[0]-sampledPoint[0], v[1]-sampledPoint[1], v[2]-sampledPoint[2]) / totalDistance
-    // );
 
     let v1 = nearestVertices[0];
     let v2 = nearestVertices[1];
@@ -75,11 +62,6 @@ function interpolateZValue(sampledPoint, nearestVertices) {
     const W2 = ((v3[1]-v1[1])*(P[0]-v3[0]) + (v1[0]-v3[0])*(P[1]-v3[1]))/((v2[1]-v3[1])*(v1[0]-v3[0]) + (v3[0]-v2[0])*(v1[1]-v3[1]));
     const W3 = 1 - W1 - W2;
 
-    // Perform interpolation for z-value
-    // const interpolatedZ = nearestVertices.reduce(
-    //     (acc, vertex, index) => acc + vertex[2] * weights[index],
-    //     0
-    // );
     const interpolatedZ = v1[2]*W1 + v2[2]*W2 + v3[2]*W3;
 
     return interpolatedZ;
@@ -89,21 +71,42 @@ function interpolateZValue(sampledPoint, nearestVertices) {
 function compareMeshWithGroundTruth(groundTruthFunction, mesh, numSamples, xRange, yRange) {
     let sumSquaredError = 0;
     let vertices = [];
-        for(let i = 0; i < mesh.indices.length/3; i += 3) {
+        for(let i = 0; i < mesh.indices.length; i++) {
             vertices.push([mesh.positions[3*mesh.indices[i]], mesh.positions[3*(mesh.indices[i])+1], mesh.positions[3*(mesh.indices[i])+2]]);
         }
-
+    //console.log(mesh.positions);
+    //console.log(mesh.indices);
+    //console.log(vertices);
+    let count = 0;
     for (let i = 0; i < numSamples; i++) {
         const sampledX = xRange[0] + (xRange[1]-xRange[0])*Math.random();
         const sampledY = yRange[0] + (yRange[1]-yRange[0])*Math.random();
         const truthZ = groundTruthFunction(sampledX, sampledY);
 
         const sampledPoint = [sampledX, sampledY, truthZ];
-        
-        const nearestVertices = findNearestVertices(sampledPoint, vertices);
-        const interpolatedZ = interpolateZValue(sampledPoint, nearestVertices);
 
-        sumSquaredError += Math.pow(interpolatedZ - truthZ, 2);
+        if(truthZ == Infinity || truthZ == undefined || isNaN(truthZ) || truthZ == 0) { continue; }
+        const nearestVertices = findNearestVertices(sampledPoint, vertices);
+
+        let undefinedPoint = false;
+        for(let v of nearestVertices) {
+            if(v[2] === Infinity || isNaN(v[2]) || v[2] == undefined) {
+                undefinedPoint = true;
+                break;
+            }
+        }
+        if(undefinedPoint) continue;
+
+        if(nearestVertices == null) {
+            count++;
+            continue;
+        }
+        const interpolatedZ = interpolateZValue(sampledPoint, nearestVertices);
+        // if(interpolatedZ == Infinity) {
+        // console.log("i ",sampledPoint, nearestVertices, interpolatedZ);
+        // }
+        //console.log(sampledPoint, nearestVertices, interpolatedZ);
+        sumSquaredError += Math.pow((interpolatedZ - truthZ)/truthZ, 2);
     }
 
     const meanSquaredError = sumSquaredError / numSamples;
@@ -111,4 +114,4 @@ function compareMeshWithGroundTruth(groundTruthFunction, mesh, numSamples, xRang
     return rmse;
 };
 
-export {compareMeshWithGroundTruth};
+export {compareMeshWithGroundTruth, interpolateZValue, getMinTriangleArea};
