@@ -6,30 +6,33 @@ function visualiseHigherDimensionalDataset(flattenedPoints, numDimensions, activ
     let projectedPoints = [];
     if(activeAxisIdxs.length > 2) { console.error("Attempt to render too many dimensions!"); }
 
-    for(let i = 0; i < flattenedPoints.length/numDimensions; i += numDimensions) {
-        currentVertex = [];
+    for(let i = 0; i < flattenedPoints.length; i += numDimensions) {
+        let currentVertex = [];
         for (let j = 0; j < numDimensions; j++) {
             currentVertex.push(flattenedPoints[i+j]);
         }
-        let outputPoint = currentVertex.slice(-1);
+        let outputPointIdx = currentVertex.length-1;
 
         for (let k of activeAxisIdxs) {
             let point = currentVertex[k];
             currentVertex.forEach((p, idx) => {
-                if (p !== outputPoint && !(idx in activeAxisIdxs)) {
+                
+                if (idx !== outputPointIdx && !(idx in activeAxisIdxs)) {
+                    console.log(p, idx, k, point, outputPointIdx);
                     point /= p;
                 }
             });
             projectedPoints.push(point);
         }
         currentVertex.forEach((p, idx) => {
-            if (p !== outputPoint && !(idx in activeAxisIdxs)) {
-                outputPoint /= p;
+            if (idx !== outputPointIdx && !(idx in activeAxisIdxs)) {
+                currentVertex[outputPointIdx] /= p;
             }});
-            projectedPoints.push(outputPoint);
+            projectedPoints.push(currentVertex[outputPointIdx]);
     }
-    
-    return {positions: [], texCoords: [], singularPoints: projectedPoints }
+    console.log(projectedPoints);
+
+    return {positions: [], texCoords: [], singularPositions: projectedPoints, zRanges: [-Infinity, Infinity], indices: [] }
 }
 
 export {visualiseHigherDimensionalDataset} ;

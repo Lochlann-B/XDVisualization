@@ -11,6 +11,7 @@ import { SlicingController } from "./GraphVisualiser/slicingController.js";
 import { Controller } from "./Controllers/controller.js";
 import { VrController } from "./Controllers/vr-controller.js";
 import { InfoCollator } from "./GraphVisualiser/collate-info.js";
+import { visualiseHigherDimensionalDataset } from "./GraphVisualiser/point-visualiser.js";
 
 export class AppEngine {
 
@@ -44,14 +45,23 @@ export class AppEngine {
         axesCtrller.zRange = zRange;
         this.geometryControllers.line.push(axesCtrller);
 
-        this.graphSlicer = new SlicingController((x,y,z,w) => x**2 + y**2 + z**2 - w**2);
+        this.graphSlicer = new SlicingController((x,y,z,w) => x**2 + y**2 - z**2 - Math.sin(w));
 
         const graphCtrller = new GraphController();
 
+        /*
+
+        ()
+
+        */
+
         graphCtrller.initGraphControllerTemp(this.graphSlicer.slicedFn, [xRange, yRange, zRange]);
+        //graphCtrller.arrays = visualiseHigherDimensionalDataset([0,0,1,0,2,2,2,1], 4, [0,1]);
         graphCtrller.modelMatrix = axesCtrller.modelMatrix;
         this.geometryControllers.graph.push(graphCtrller);
         this.geometryControllers.point.push(graphCtrller);
+
+
 
         const txtCtrller = new TextGeometryController();
         txtCtrller.camera = this.camera;

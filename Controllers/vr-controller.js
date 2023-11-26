@@ -82,14 +82,14 @@ export class VrController {
             this.toggleSliceButton = true;
         } else { this.toggleSliceButton = false; }
         if(this.controllers.right.gamepad.buttons[0].pressed) {
-            this.sliceController.sliceVals[this.curSliceIdx] += 0.5*this.controllers.right.gamepad.buttons[0].value;
+            this.sliceController.sliceVals[this.curSliceIdx] += 0.1*this.controllers.right.gamepad.buttons[0].value;
             this.infoCollator.update("filledArgVals", this.sliceController.sliceVals);
             this.graphController.fn = this.sliceController.slicedFn;
             tessellate(this.sliceController.slicedFn, this.graphController.xSamples, this.graphController.ySamples, this.graphController.zSamples).then(res => this.graphController.arrays = res);
             
         }
         if(this.controllers.right.gamepad.buttons[1].pressed) {
-            this.sliceController.sliceVals[this.curSliceIdx] -= 0.5*this.controllers.right.gamepad.buttons[1].value;
+            this.sliceController.sliceVals[this.curSliceIdx] -= 0.1*this.controllers.right.gamepad.buttons[1].value;
             this.infoCollator.update("filledArgVals", this.sliceController.sliceVals);
             this.graphController.fn = this.sliceController.slicedFn;
             tessellate(this.sliceController.slicedFn, this.graphController.xSamples, this.graphController.ySamples, this.graphController.zSamples).then(res => this.graphController.arrays = res);
