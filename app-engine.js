@@ -45,7 +45,7 @@ export class AppEngine {
         axesCtrller.zRange = zRange;
         this.geometryControllers.line.push(axesCtrller);
 
-        this.graphSlicer = new SlicingController((x,y,z,w) => x**2 + y**2 - z**2 - Math.sin(w));
+        this.graphSlicer = new SlicingController((x,y,z) => Math.abs(Math.round((x + y)*30) % 2) ==  1 ? undefined : Math.sin(1000*(x * x + y * y))/1000 + z);
 
         const graphCtrller = new GraphController();
 
