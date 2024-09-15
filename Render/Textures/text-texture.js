@@ -1,6 +1,6 @@
 import { loadTexture } from "./texture-controller.js";
 
-const fontMap = {"Arial": "../../Resources/fontt.png", "pixel": "../../Resources/font (1).png"};
+const fontMap = {"Arial": "../Resources/fontt.png", "pixel": "../Resources/font (1).png"};
 
 function getTexture(gl, font) {
     // Load texture
