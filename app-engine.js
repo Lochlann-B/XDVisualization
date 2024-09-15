@@ -47,7 +47,8 @@ export class AppEngine {
 
         // this.graphSlicer = new SlicingController((x,y,z) => Math.abs(Math.round((x + y)*30) % 2) ==  1 ? undefined : Math.sin(1000*(x * x + y * y))/1000 + z);
        // this.graphSlicer = new SlicingController((x, y, z) => Math.asin(Math.sin(x*1000) + 1) + Math.asin(Math.sin(y*1000) + 1) + z);
-       this.graphSlicer = new SlicingController((x,y,z) => (!((Math.round(5*z)) %2) || !((Math.round(5*y))%2)) ? undefined : Math.sin((z * z + y * y)) + x);
+      //  this.graphSlicer = new SlicingController((x,y,z) => (!((Math.round(5*z)) %2) || !((Math.round(5*y))%2)) ? undefined : Math.sin((z * z + y * y)) + x);
+        this.graphSlicer = new SlicingController((x,y,z,w) => x*x - y + w*Math.sin(z));
         const graphCtrller = new GraphController();
 
         /*
